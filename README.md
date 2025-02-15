@@ -1,4 +1,3 @@
-# daily_watch_sre
 # Daily Watch SRE&AI
 
 一个优雅的微信文章收藏与阅读工具，专注于 SRE（站点可靠性工程）与 AI 领域的技术文章管理。
