@@ -1,18 +1,28 @@
 # daily_watch_sre
-daily_watch_sre
+# Daily Watch SRE&AI
 
-每日稳定性&AI观察
+一个优雅的微信文章收藏与阅读工具，专注于 SRE（站点可靠性工程）与 AI 领域的技术文章管理。
 
-## 项目简介
-这是一个基于 Flask 的 Web 应用，用于展示和监控每日稳定性指标与 AI 相关观察数据。
+## 功能特点
 
-## 功能特性
-- 稳定性指标监控
-- AI 观察数据展示
-- RESTful API 接口
+- 🚀 **一键保存**: 支持一键保存微信公众号文章，自动提取标题和来源
+- 📱 **优雅阅读**: 提供清爽的阅读界面，去除广告和冗余元素
+- 📅 **日期分组**: 按日期智能分组文章，支持折叠/展开管理
+- 🔄 **分页浏览**: 采用日期分组分页，提供流畅的浏览体验
+- 🎨 **响应式设计**: 现代化的 UI 设计，提供流畅的交互体验
+- 🖼️ **图片代理**: 智能处理微信图片，确保图片正常显示
+- 🔍 **重复检测**: 智能检测重复文章，避免重复收藏
 
-## 安装说明
+## 技术栈
+
+- **后端**: Python + Flask
+- **前端**: HTML5 + CSS3 + JavaScript
+- **数据存储**: JSON 文件存储
+- **部署**: 支持 Docker 部署（开发中）
+
+## 快速开始
+
 1. 克隆仓库
 ```bash
-git clone https://github.com/yourusername/daily_watch_sre.git
+git clone https://github.com/liu-kaining/daily_watch_sre.git
 cd daily_watch_sre
