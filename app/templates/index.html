@@ -6,7 +6,80 @@ Date: 2025-02-16
 
 {% block title %}首页{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+
 {% block content %}
-<h1>欢迎使用 Daily Watch SRE</h1>
-<p>每日稳定性&AI观察平台</p>
+<div class="container">
+    <div class="sidebar">
+        <div class="add-url-form">
+            <form action="{{ url_for('main.add_url') }}" method="post">
+                <div class="input-group">
+                    <input type="url" name="url" placeholder="请输入微信文章链接" required>
+                    <button type="submit">
+                        <span>添加文章</span>
+                        <i class="icon">+</i>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="url-list">
+            {% for group in groups %}
+            <div class="date-group">
+                <div class="date-header" onclick="toggleGroup(this)">
+                    <span class="toggle-icon">›</span>
+                    <span>{{ group.date }}</span>
+                </div>
+                <div class="article-group">
+                    {% for article in group.articles %}
+                    <div class="url-item" onclick="loadContent('{{ article.url }}')" data-url="{{ article.url }}">
+                        <div class="title">{{ article.title }}</div>
+                        <div class="meta">
+                            <span class="source">{{ article.source }}</span>
+                            <span class="date">{{ article.created_at[11:] }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if total_pages > 1 %}
+            <div class="pagination">
+                {% if current_page > 1 %}
+                <a href="?page={{ current_page - 1 }}" class="page-btn">&lt; 上一页</a>
+                {% endif %}
+                
+                <span class="page-info">{{ current_page }} / {{ total_pages }}</span>
+                
+                {% if current_page < total_pages %}
+                <a href="?page={{ current_page + 1 }}" class="page-btn">下一页 &gt;</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="content">
+        <iframe id="content-frame" name="content-frame"></iframe>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- 引入 JS 文件 -->
+<script src="{{ url_for('static', filename='js/datetime.js') }}"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<!-- 页面初始化 -->
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        var loadUrl = "{{ load_url|default('', true)|safe }}";
+        if (loadUrl) {
+            loadContent(loadUrl);
+        } else {
+            showWelcome();
+        }
+    });
+</script>
 {% endblock %}

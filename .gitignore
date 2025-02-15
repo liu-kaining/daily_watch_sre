@@ -31,3 +31,6 @@ var/
 # OS
 .DS_Store
 Thumbs.db
+
+# Application Data
+app/data/articles.json

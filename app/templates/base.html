@@ -8,14 +8,32 @@ Date: 2025-02-16
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %} - Daily Watch SRE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    {% block styles %}{% endblock %}
 </head>
 <body>
     <nav>
-        <h1>Daily Watch SRE</h1>
+        <div class="left">
+            <h1>Daily Watch SRE&AI</h1>
+            <span>每日稳定性&AI观察</span>
+        </div>
+        <div class="datetime-display">
+            <span class="date"></span>
+            <span class="divider">|</span>
+            <span class="time"></span>
+        </div>
+        <div class="right">
+            <a href="https://github.com/liu-kaining/daily_watch_sre" target="_blank">GitHub</a>
+            <span>|</span>
+            <span>作者: liqian_liukaining</span>
+        </div>
     </nav>
     <main>
         {% block content %}{% endblock %}
     </main>
+    {% block scripts %}{% endblock %}
+<!-- 在 body 标签结束前添加 -->
+    <script src="{{ url_for('static', filename='js/datetime.js') }}"></script>
 </body>
 </html>
 ```
