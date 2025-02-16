@@ -56,16 +56,12 @@ class Article:
             self.source = "获取失败"
 
     @staticmethod
-    def is_duplicate(articles, new_url, new_title=None):
+    def is_duplicate(articles, new_url):
         """检查文章是否重复"""
         normalized_new_url = Article._normalize_url(new_url)
         for article in articles:
-            # 检查URL是否重复
-            if Article._normalize_url(article['url']) == normalized_new_url:
-                return True, "该文章链接已存在"
-            # 如果提供了标题，也检查标题是否重复
-            if new_title and article['title'] == new_title:
-                return True, "该文章标题已存在"
+            if Article._normalize_url(article.get('url', '')) == normalized_new_url:
+                return True, "该文章已经存在"
         return False, None
 
     @staticmethod
@@ -80,18 +76,24 @@ class Article:
             json.dump(data, f, ensure_ascii=False, indent=2)
 
     @staticmethod
-    def load_from_file(filename='articles.json', page=1, per_page=5):  # 每页显示5个日期组
+    def load_from_file(filename='articles.json', page=1, per_page=5):
         try:
             with open(f'app/data/{filename}', 'r', encoding='utf-8') as f:
                 data = json.load(f)
             
-            # 按创建时间倒序排序
-            data.sort(key=lambda x: x['created_at'], reverse=True)
+            # 处理旧数据，确保所有文章都有 created_at 字段
+            for article in data:
+                if 'created_at' not in article:
+                    # 如果没有 created_at，尝试使用 date 字段
+                    article['created_at'] = article.get('date', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            
+            # 按创建时间倒序排序，使用 get 方法防止键错误
+            data.sort(key=lambda x: x.get('created_at', ''), reverse=True)
             
             # 按日期分组
             groups = {}
             for article in data:
-                date = article['created_at'][:10]
+                date = article['created_at'][:10]  # 只取日期部分
                 if date not in groups:
                     groups[date] = []
                 groups[date].append(article)

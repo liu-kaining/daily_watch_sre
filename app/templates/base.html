@@ -14,8 +14,12 @@ Date: 2025-02-16
 <body>
     <nav>
         <div class="left">
-            <h1>Daily Watch SRE&AI</h1>
-            <span>每日稳定性&AI观察</span>
+            <div class="nav-title">
+                <a href="javascript:void(0)" onclick="window.location.href='/'">
+                    <span class="title-en">Daily Watch SRE&AI</span>
+                    <span class="title-zh">每日稳定性&AI观察</span>
+                </a>
+            </div>
         </div>
         <div class="datetime-display">
             <span class="date"></span>
@@ -32,7 +36,6 @@ Date: 2025-02-16
         {% block content %}{% endblock %}
     </main>
     {% block scripts %}{% endblock %}
-<!-- 在 body 标签结束前添加 -->
     <script src="{{ url_for('static', filename='js/datetime.js') }}"></script>
 </body>
 </html>

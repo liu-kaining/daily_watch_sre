@@ -5,11 +5,16 @@ Date: 2025-02-16
 from flask import render_template, request, jsonify, redirect, url_for, Response
 from app.routes import main
 from app.models.article import Article
+from app.config.settings import verify_token  # 添加这行导入
 import requests
 from bs4 import BeautifulSoup
-import json  # Add this import
-
+import json
+from datetime import datetime
 import re
+
+@main.route('/guide')
+def guide():
+    return render_template('guide.html')
 
 @main.route('/')
 def index():
@@ -23,36 +28,52 @@ def index():
 @main.route('/add_url', methods=['POST'])
 def add_url():
     url = request.form.get('url')
-    if url:
-        # 创建临时文章对象获取标题
-        temp_article = Article(url)
-        articles_data = []
-        try:
-            with open('app/data/articles.json', 'r', encoding='utf-8') as f:
-                articles_data = json.load(f)
-        except FileNotFoundError:
-            pass
+    token = request.form.get('token')
 
-        # 检查重复
-        is_duplicate, message = Article.is_duplicate(articles_data, url, temp_article.title)
-        if is_duplicate:
-            return jsonify({
-                'success': False,
-                'message': message
-            }), 400
-
-        # 如果不重复，添加文章
-        articles = Article.load_from_file()
-        articles.append(temp_article)
-        Article.save_to_file(articles)
+    if not verify_token(token):
         return jsonify({
-            'success': True,
-            'message': '文章添加成功'
+            'success': False,
+            'message': '口令验证失败，请联系管理员获取正确的口令'
         })
-    return jsonify({
-        'success': False,
-        'message': '请提供文章链接'
-    }), 400
+
+    try:
+        # 读取现有文章
+        with open('app/data/articles.json', 'r', encoding='utf-8') as f:
+            articles = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        articles = []
+
+    # 检查重复
+    is_dup, msg = Article.is_duplicate(articles, url)
+    if is_dup:
+        return jsonify({
+            'success': False,
+            'message': msg
+        })
+
+    try:
+        # 创建新文章对象并获取信息
+        new_article = Article(url)
+        article_data = {
+            'url': new_article.url,
+            'title': new_article.title or '获取中...',
+            'source': new_article.source or '获取中...',
+            'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }
+
+        # 添加新文章
+        articles.append(article_data)
+
+        # 保存更新后的文章列表
+        with open('app/data/articles.json', 'w', encoding='utf-8') as f:
+            json.dump(articles, f, ensure_ascii=False, indent=2)
+
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'添加文章失败：{str(e)}'
+        })
 
 @main.route('/get_content')
 def get_content():

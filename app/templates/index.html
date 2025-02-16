@@ -1,50 +1,62 @@
 <!--
-Author: liqian_liukaining
-Date: 2025-02-16
+ * Daily Watch SRE&AI - 主页面
+ * Author: liqian_liukaining
+ * Date: 2025-02-16
+ * Description: 项目主页面，包含文章列表和内容展示
 -->
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Watch SRE&AI</title>
+    {% extends "base.html" %}
 
-{% block title %}首页{% endblock %}
+    {% block title %}首页{% endblock %}
 
-{% block styles %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-{% endblock %}
+    {% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    {% endblock %}
 
-{% block content %}
-<div class="container">
-    <div class="sidebar">
-        <div class="add-url-form">
-            <form action="{{ url_for('main.add_url') }}" method="post">
-                <div class="input-group">
-                    <input type="url" name="url" placeholder="请输入微信文章链接" required>
-                    <button type="submit">
-                        <span>添加文章</span>
-                        <i class="icon">+</i>
-                    </button>
-                </div>
-            </form>
-        </div>
-        <div class="url-list">
-            {% for group in groups %}
-            <div class="date-group">
-                <div class="date-header" onclick="toggleGroup(this)">
-                    <span class="toggle-icon">›</span>
-                    <span>{{ group.date }}</span>
-                </div>
-                <div class="article-group">
-                    {% for article in group.articles %}
-                    <div class="url-item" onclick="loadContent('{{ article.url }}')" data-url="{{ article.url }}">
-                        <div class="title">{{ article.title }}</div>
-                        <div class="meta">
-                            <span class="source">{{ article.source }}</span>
-                            <span class="date">{{ article.created_at[11:] }}</span>
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
+    {% block content %}
+    <div class="container">
+        <div class="left-panel">
+            <!-- 头部添加按钮 -->
+            <div class="header-actions">
+                <button id="addArticleBtn" class="add-btn">
+                    <i class="fas fa-plus"></i> 添加文章
+                </button>
             </div>
-            {% endfor %}
             
+            <!-- 文章列表区域 -->
+            <div class="article-list">
+                {% for group in groups %}
+                <div class="date-group">
+                    <div class="date-header" onclick="toggleGroup(this)">
+                        <span class="date">{{ group.date }}</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <div class="article-group">
+                        {% for article in group.articles %}
+                        <div class="article-item" onclick="loadContent('{{ article.url }}')">
+                            <div class="article-title">{{ article.title }}</div>
+                            <div class="article-meta">
+                                <div class="meta-left">
+                                    <span class="source">{{ article.source }}</span>
+                                </div>
+                                <div class="meta-right">
+                                    <span class="created-time">{{ article.created_at }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+    
+            <!-- 分页控件 -->
             {% if total_pages > 1 %}
             <div class="pagination">
                 {% if current_page > 1 %}
@@ -58,28 +70,50 @@ Date: 2025-02-16
                 {% endif %}
             </div>
             {% endif %}
+    
+            <!-- 底部版权信息 -->
+            <div class="footer-info">
+                <div class="project-name">Daily Watch SRE&AI</div>
+                <div class="copyright">Created by <span class="author">liqian_liukaining</span> © 2025</div>
+            </div>
+        </div>
+        
+        <!-- 右侧内容展示区 -->
+        <div class="right-panel">
+            <iframe id="content-frame" name="content-frame" src="{{ url_for('static', filename='guide.html') }}"></iframe>
         </div>
     </div>
-    <div class="content">
-        <iframe id="content-frame" name="content-frame"></iframe>
+</div>
+
+<!-- 添加文章模态框 -->
+<div id="addArticleModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">添加文章</h3>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="addArticleForm" class="add-article-form">
+                <div class="form-group">
+                    <label for="articleUrl">文章链接</label>
+                    <input type="url" id="articleUrl" name="url" required>
+                </div>
+                <div class="form-group">
+                    <label for="articleToken">口令</label>
+                    <input type="password" id="articleToken" name="token" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" onclick="closeModal()">取消</button>
+            <button class="modal-btn modal-btn-primary" onclick="submitArticle()">添加</button>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<!-- 引入 JS 文件 -->
-<script src="{{ url_for('static', filename='js/datetime.js') }}"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-
-<!-- 页面初始化 -->
-<script>
-    window.addEventListener('DOMContentLoaded', function() {
-        var loadUrl = "{{ load_url|default('', true)|safe }}";
-        if (loadUrl) {
-            loadContent(loadUrl);
-        } else {
-            showWelcome();
-        }
-    });
-</script>
 {% endblock %}
+</body>
+</html>

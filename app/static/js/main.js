@@ -1,93 +1,23 @@
-// 添加初始化欢迎界面
 // 欢迎界面函数
-function showWelcome() {
-    const frame = document.getElementById('content-frame');
-    const welcomeHtml = `
-        <style>
-            body {
-                margin: 0;
-                padding: 40px;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                min-height: calc(100vh - 80px);
-                color: #333;
-                background: #fff;
-            }
-            .welcome-container {
-                max-width: 600px;
-                text-align: center;
-            }
-            h1 {
-                color: #1a73e8;
-                margin-bottom: 30px;
-            }
-            .instruction-card {
-                background: #f8f9fa;
-                border-radius: 12px;
-                padding: 24px;
-                margin: 20px 0;
-                text-align: left;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            }
-            .instruction-card h2 {
-                color: #2c3e50;
-                font-size: 18px;
-                margin-bottom: 16px;
-            }
-            .step {
-                margin-bottom: 12px;
-                display: flex;
-                align-items: flex-start;
-                gap: 8px;
-            }
-            .step-number {
-                background: #1a73e8;
-                color: white;
-                width: 24px;
-                height: 24px;
-                border-radius: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            }
-            .step-text {
-                line-height: 1.6;
-            }
-        </style>
-        <div class="welcome-container">
-            <h1>欢迎使用 Daily Watch SRE&AI</h1>
-            <div class="instruction-card">
-                <h2>使用指南</h2>
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-text">
-                        在左上角的输入框中粘贴微信公众号文章链接，点击"添加文章"按钮保存文章。
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-text">
-                        文章会出现在左侧列表中，包含标题、来源和保存时间。
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-text">
-                        点击左侧列表中的任意文章，即可在此处查看文章内容。
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    frame.srcdoc = welcomeHtml;
-}
+// 将 showWelcome 函数移到全局作用域
+// 删除以下代码
+// window.showWelcome = function() {
+//     const frame = document.getElementById('content-frame');
+//     const welcomeHtml = `...`;
+//     frame.srcdoc = welcomeHtml;
+// }
 
 // 加载文章内容函数
 function loadContent(url) {
+    // 移除之前的选中状态
+    document.querySelectorAll('.article-item.active').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // 添加新的选中状态
+    const currentItem = event.currentTarget;
+    currentItem.classList.add('active');
+    
     fetch(`/get_content?url=${encodeURIComponent(url)}`)
         .then(response => response.text())
         .then(html => {
@@ -99,94 +29,11 @@ function loadContent(url) {
         });
 }
 
-// 表单提交处理
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('.add-url-form form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            
-            fetch('/add_url', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = `/?page=1&load=${encodeURIComponent(formData.get('url'))}`;
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                alert('添加文章失败，请重试');
-            });
-        });
-    }
-
-    // 默认显示欢迎界面
-    if (!window.location.search.includes('load=')) {
-        showWelcome();
-    }
-});
-
-// 添加模态框 HTML 到页面
-document.addEventListener('DOMContentLoaded', function() {
-    const modalHtml = `
-        <div id="notification-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <span class="modal-title"></span>
-                    <span class="close">&times;</span>
-                </div>
-                <div class="modal-body"></div>
-                <div class="modal-footer">
-                    <button class="modal-btn modal-btn-primary">去查看</button>
-                    <button class="modal-btn modal-btn-secondary">取消</button>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-    // 表单提交处理
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('.add-url-form form');
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            const url = formData.get('url');
-            
-            fetch('/add_url', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // 刷新页面并加载新文章
-                    window.location.href = `/?page=1&load=${encodeURIComponent(url)}`;
-                } else {
-                    showModal('添加失败', data.message);
-                }
-            })
-            .catch(error => {
-                showModal('错误', '添加文章失败，请重试');
-            });
-        });
-    });
-
-    // 模态框关闭按钮事件
-    document.querySelector('.modal .close').addEventListener('click', hideModal);
-    document.querySelector('.modal-btn-secondary').addEventListener('click', hideModal);
-});
-
 // 辅助函数：显示模态框
-function showModal(title, message, onConfirm = null) {
+function showModal(title, message, onConfirm = null, onCancel = null) {
     const modal = document.getElementById('notification-modal');
     modal.querySelector('.modal-title').textContent = title;
-    modal.querySelector('.modal-body').textContent = message;
+    modal.querySelector('.modal-body').innerHTML = message;
     
     const confirmBtn = modal.querySelector('.modal-btn-primary');
     if (onConfirm) {
@@ -198,13 +45,42 @@ function showModal(title, message, onConfirm = null) {
     } else {
         confirmBtn.style.display = 'none';
     }
+
+    const cancelBtn = modal.querySelector('.modal-btn-secondary');
+    if (onCancel) {
+        cancelBtn.style.display = 'block';
+        cancelBtn.onclick = () => {
+            if (typeof onCancel === 'function') {
+                onCancel();
+            }
+            hideModal();
+        };
+    }
+    
+    // 添加关闭按钮事件
+    const closeBtn = modal.querySelector('.close');
+    if (closeBtn) {
+        closeBtn.onclick = hideModal;
+    }
+    
+    // 添加点击背景关闭功能
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            hideModal();
+        }
+    };
     
     modal.style.display = 'flex';
 }
 
 // 辅助函数：隐藏模态框
 function hideModal() {
-    document.getElementById('notification-modal').style.display = 'none';
+    const modal = document.getElementById('notification-modal');
+    modal.style.display = 'none';
+    
+    // 清空输入框
+    const inputs = modal.querySelectorAll('input');
+    inputs.forEach(input => input.value = '');
 }
 
 // 辅助函数：标准化URL
@@ -233,40 +109,91 @@ function toggleGroup(header) {
     }
 }
 
-// 在 DOMContentLoaded 事件中添加初始化折叠状态
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('.add-url-form form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            
-            fetch('/add_url', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = `/?page=1&load=${encodeURIComponent(formData.get('url'))}`;
-                } else {
-                    alert(data.message);
+// 口令验证对话框
+function showTokenDialog() {
+    return new Promise((resolve) => {
+        showModal('需要验证', 
+            `<div class="token-input">
+                <p class="token-tip">请输入管理员口令以添加文章</p>
+                <input type="password" id="token-input" placeholder="请输入口令" 
+                    onkeypress="if(event.keyCode===13) document.querySelector('.modal-btn-primary').click()"
+                />
+            </div>`,
+            () => {
+                const token = document.getElementById('token-input').value;
+                resolve(token);
+            },
+            () => resolve(null)
+        );
+        // 自动聚焦输入框
+        setTimeout(() => document.getElementById('token-input').focus(), 100);
+    });
+}
+
+// 显示添加文章对话框
+function showAddArticleDialog() {
+    const dialogHtml = `
+        <div class="add-article-form">
+            <div class="form-group">
+                <label for="article-url">文章链接</label>
+                <input type="text" id="article-url" placeholder="请输入微信公众号文章链接" />
+            </div>
+            <div class="form-group">
+                <label for="token-input">管理员口令</label>
+                <input type="password" id="token-input" placeholder="请输入口令" 
+                    onkeypress="if(event.keyCode===13) document.querySelector('.modal-btn-primary').click()"
+                />
+            </div>
+        </div>
+    `;
+
+    showModal('添加文章', dialogHtml, handleArticleSubmit, true);
+    
+    // 自动聚焦到文章链接输入框
+    setTimeout(() => document.getElementById('article-url').focus(), 100);
+}
+
+// 处理文章提交
+function handleArticleSubmit() {
+    const url = document.getElementById('article-url').value;
+    const token = document.getElementById('token-input').value;
+    
+    if (!url || !token) {
+        showModal('提示', '<div class="error-message">请填写完整信息</div>');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('url', url);
+    formData.append('token', token);
+    
+    fetch('/add_url', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showModal('添加成功', 
+                '<div class="success-message">文章已成功添加到收藏列表</div>',
+                () => {
+                    window.location.href = '/?page=1';
                 }
-            })
-            .catch(error => {
-                alert('添加文章失败，请重试');
-            });
-        });
-    }
+            );
+        } else {
+            showModal('添加失败', 
+                `<div class="error-message">${data.message || '添加文章失败，请重试'}</div>`
+            );
+        }
+    })
+    .catch(error => {
+        showModal('错误', '<div class="error-message">添加文章失败，请重试</div>');
+    });
+}
 
-    // 默认显示欢迎界面
-    if (!window.location.search.includes('load=')) {
-        showWelcome();
-    }
-});
-
-// 添加模态框 HTML 到页面
+// 初始化
 document.addEventListener('DOMContentLoaded', function() {
+    // 添加模态框 HTML
     const modalHtml = `
         <div id="notification-modal" class="modal">
             <div class="modal-content">
@@ -276,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="modal-body"></div>
                 <div class="modal-footer">
-                    <button class="modal-btn modal-btn-primary">去查看</button>
+                    <button class="modal-btn modal-btn-primary">确定</button>
                     <button class="modal-btn modal-btn-secondary">取消</button>
                 </div>
             </div>
@@ -284,71 +211,79 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-    // 表单提交处理
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('.add-url-form form');
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(form);
-            const url = formData.get('url');
-            
-            fetch('/add_url', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // 刷新页面并加载新文章
-                    window.location.href = `/?page=1&load=${encodeURIComponent(url)}`;
-                } else {
-                    showModal('添加失败', data.message);
-                }
-            })
-            .catch(error => {
-                showModal('错误', '添加文章失败，请重试');
-            });
-        });
+    // 标记今天的日期并处理折叠状态
+    const today = new Date().toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).replace(/\//g, '-');
+
+    document.querySelectorAll('.date-group').forEach(group => {
+        const dateText = group.querySelector('.date').textContent.trim();
+        const articleGroup = group.querySelector('.article-group');
+        
+        if (dateText === today) {
+            group.querySelector('.date-header').classList.add('today');
+            // 展开今天的文章列表
+            articleGroup.style.maxHeight = articleGroup.scrollHeight + 'px';
+        } else {
+            // 折叠其他日期的文章列表
+            group.classList.add('collapsed');
+            articleGroup.style.maxHeight = '0';
+        }
     });
 
     // 模态框关闭按钮事件
     document.querySelector('.modal .close').addEventListener('click', hideModal);
     document.querySelector('.modal-btn-secondary').addEventListener('click', hideModal);
-});
 
-// 辅助函数：显示模态框
-function showModal(title, message, onConfirm = null) {
-    const modal = document.getElementById('notification-modal');
-    modal.querySelector('.modal-title').textContent = title;
-    modal.querySelector('.modal-body').textContent = message;
-    
-    const confirmBtn = modal.querySelector('.modal-btn-primary');
-    if (onConfirm) {
-        confirmBtn.style.display = 'block';
-        confirmBtn.onclick = () => {
-            onConfirm();
-            hideModal();
-        };
-    } else {
-        confirmBtn.style.display = 'none';
+    // 表单提交处理
+    const form = document.querySelector('.add-url-form form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            showTokenDialog().then(token => {
+                if (!token) return;
+                
+                const formData = new FormData(form);
+                formData.append('token', token);
+                
+                fetch('/add_url', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showModal('添加成功', 
+                            '<div class="success-message">文章已成功添加到收藏列表</div>',
+                            () => {
+                                // 修改这里：直接刷新页面，不带参数
+                                window.location.href = '/?page=1';
+                            }
+                        );
+                        form.reset(); // 清空表单
+                    } else {
+                        showModal('添加失败', data.message || '添加文章失败，请重试');
+                    }
+                })
+                .catch(error => {
+                    showModal('错误', '添加文章失败，请重试');
+                });
+            });
+        });
     }
-    
-    modal.style.display = 'flex';
-}
 
-// 辅助函数：隐藏模态框
-function hideModal() {
-    document.getElementById('notification-modal').style.display = 'none';
-}
+    // 默认显示欢迎界面
+    // 删除这段代码
+    // if (!window.location.search.includes('load=')) {
+    //     showWelcome();
+    // }
 
-// 辅助函数：标准化URL
-function normalizeUrl(url) {
-    try {
-        const urlObj = new URL(url);
-        if (urlObj.hostname.includes('mp.weixin.qq.com')) {
-            const s = urlObj.searchParams.get('s');
-            return s ? `${urlObj.origin}${urlObj.pathname}?s=${s}` : url;
-        }
-    } catch (e) {}
-    return url;
-}
+    // 添加文章按钮事件
+    const addArticleBtn = document.getElementById('addArticleBtn');
+    if (addArticleBtn) {
+        addArticleBtn.addEventListener('click', showAddArticleDialog);
+    }
+});

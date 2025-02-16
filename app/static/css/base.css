@@ -21,10 +21,101 @@ nav .left {
     gap: 20px;
 }
 
-nav h1 {
-    margin: 0;
+.nav-title a {
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-title .title-en {
+    font-size: 24px;
+    font-weight: 500;
+    color: white;
+}
+
+.nav-title .title-zh {
+    font-size: 18px;
+    color: white;
+    opacity: 0.9;
+}
+
+.nav-title {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav-title .title-en {
     font-size: 20px;
     font-weight: 500;
+    color: white;
+}
+
+.nav-title .title-zh {
+    font-size: 14px;
+    color: white;
+    opacity: 0.9;
+}
+
+.nav-title a {
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+}
+
+.nav-title .title-en {
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.nav-title .title-zh {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+nav h1 {
+    margin: 0;
+    font-size: 24px;  /* 增大标题字号 */
+    font-weight: 500;
+    color: white;
+}
+
+nav span {
+    font-size: 16px;  /* 增大副标题字号 */
+    opacity: 0.9;
+    color: white;
+}
+
+.datetime-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    padding: 0 20px;
+    background: rgba(255, 255, 255, 0.1);
+    height: 36px;
+    border-radius: 18px;
+}
+
+.datetime-display .date {
+    font-size: 15px;
+    font-weight: normal;
+    color: white;
+}
+
+.datetime-display .divider {
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0 8px;
+}
+
+.datetime-display .time {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: #fff;
 }
 
 nav .right {
@@ -44,25 +135,11 @@ nav a {
 nav a:hover {
     opacity: 1;
 }
-.datetime-display {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: rgba(255, 255, 255, 0.9);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    padding: 0 20px;
+.home-link {
+    cursor: pointer;
+    transition: opacity 0.2s;
 }
 
-.datetime-display .date {
-    font-size: 15px;
-}
-
-.datetime-display .divider {
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.datetime-display .time {
-    font-size: 18px;
-    font-weight: 500;
-    letter-spacing: 1px;
+.home-link:hover {
+    opacity: 0.8;
 }
