@@ -55,19 +55,21 @@ Daily Watch SRE&AI
     cd daily_watch_sre
 
 2. 创建虚拟环境
+```
     python -m venv venv
     source venv/bin/activate  # Linux/Mac
     # 或
     .\venv\Scripts\activate  # Windows
-
+```
 3. 安装依赖
-    pip install -r requirements.txt
+    `pip install -r requirements.txt`
 
 4. 初始化数据目录
+```
     mkdir -p app/data
     touch app/data/articles.json
     echo "[]" > app/data/articles.json
-
+```
 5. 运行应用
     python run.py
 
@@ -144,6 +146,23 @@ A: 手动备份 app/data/articles.json 文件即可。
 Q: 支持导入历史文章吗？
 A: 目前可以手动编辑 articles.json 文件来导入，后续会添加导入功能。
 
+Q: 如何管理 Python 虚拟环境？
+A: 以下是常用的虚拟环境命令：
+   * 创建虚拟环境：python -m venv venv
+   * 激活虚拟环境：
+     - Linux/Mac：source venv/bin/activate
+     - Windows：.\venv\Scripts\activate
+   * 查看当前 Python 环境：which python
+   * 查看已安装的包：pip list
+   * 查看环境详情：pip freeze
+   * 退出虚拟环境：deactivate
+
+Q: 虚拟环境有什么用？
+A: 虚拟环境可以：
+   * 隔离项目依赖，避免包版本冲突
+   * 确保开发环境的一致性
+   * 方便项目部署和迁移
+   * 便于管理不同项目的依赖
 
 更新日志
 -------------------
