@@ -49,6 +49,19 @@ nav .left {
 }
 
 .nav-title .title-en {
+    font-size: 24px;  /* 保留较大的字号 */
+    font-weight: 500;
+    color: white;
+}
+
+.nav-title .title-zh {
+    font-size: 18px;  /* 保留较大的字号 */
+    color: white;
+    opacity: 0.9;
+}
+
+/* 删除重复的 nav h1 和 nav span 样式 */
+.nav-title .title-en {
     font-size: 20px;
     font-weight: 500;
     color: white;

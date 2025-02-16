@@ -5,7 +5,7 @@ Date: 2025-02-16
 from flask import render_template, request, jsonify, redirect, url_for, Response
 from app.routes import main
 from app.models.article import Article
-from app.config.settings import verify_token  # 添加这行导入
+from app.config.settings import verify_token
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -15,11 +15,6 @@ import re
 @main.route('/guide')
 def guide():
     return render_template('guide.html')
-
-from flask import jsonify
-from app.models.article import Article
-from app.routes import main
-import json
 
 @main.route('/api/stats/articles', methods=['GET'])
 def get_article_stats():
