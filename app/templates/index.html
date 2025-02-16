@@ -22,11 +22,13 @@
     {% block content %}
     <div class="container">
         <div class="left-panel">
-            <!-- 头部添加按钮 -->
             <div class="header-actions">
-                <button id="addArticleBtn" class="add-btn">
-                    <i class="fas fa-plus"></i> 添加文章
-                </button>
+                <form action="/search" method="GET" class="search-form">
+                    <input type="text" name="q" placeholder="搜索标题或作者..." required>
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i> 搜索
+                    </button>
+                </form>
             </div>
             
             <!-- 文章列表区域 -->
@@ -83,37 +85,36 @@
             <iframe id="content-frame" name="content-frame" src="{{ url_for('static', filename='guide.html') }}"></iframe>
         </div>
     </div>
-</div>
 
-<!-- 添加文章模态框 -->
-<div id="addArticleModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title">添加文章</h3>
-            <span class="close">&times;</span>
-        </div>
-        <div class="modal-body">
-            <form id="addArticleForm" class="add-article-form">
-                <div class="form-group">
-                    <label for="articleUrl">文章链接</label>
-                    <input type="url" id="articleUrl" name="url" required>
-                </div>
-                <div class="form-group">
-                    <label for="articleToken">口令</label>
-                    <input type="password" id="articleToken" name="token" required>
-                </div>
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button class="modal-btn modal-btn-secondary" onclick="closeModal()">取消</button>
-            <button class="modal-btn modal-btn-primary" onclick="submitArticle()">添加</button>
+    <!-- 添加文章模态框 -->
+    <div id="addArticleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">添加文章</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addArticleForm" class="add-article-form">
+                    <div class="form-group">
+                        <label for="articleUrl">文章链接</label>
+                        <input type="url" id="articleUrl" name="url" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="articleToken">口令</label>
+                        <input type="password" id="articleToken" name="token" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal()">取消</button>
+                <button class="modal-btn modal-btn-primary" onclick="submitArticle()">添加</button>
+            </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-{% endblock %}
+    {% block scripts %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% endblock %}
 </body>
 </html>

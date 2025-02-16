@@ -39,6 +39,45 @@ def index():
     articles_data = Article.load_from_file(page=page)
     return render_template('index.html', **articles_data)
 
+@main.route('/search')
+def search():
+    query = request.args.get('q', '').lower()
+    if not query:
+        return redirect(url_for('main.index'))
+        
+    try:
+        with open(Article.ARTICLES_FILE, 'r', encoding='utf-8') as f:
+            articles = json.load(f)
+            
+        # 模糊搜索
+        results = []
+        for article in articles:
+            if (query in article['title'].lower() or 
+                query in article['source'].lower()):
+                results.append(article)
+        
+        # 按日期分组
+        groups = {}
+        for article in results:
+            date = article['created_at'].split()[0]
+            if date not in groups:
+                groups[date] = []
+            groups[date].append(article)
+        
+        # 转换为列表并排序
+        groups = [{'date': date, 'articles': articles} 
+                 for date, articles in groups.items()]
+        groups.sort(key=lambda x: x['date'], reverse=True)
+        
+        return render_template('index.html', 
+                             groups=groups,
+                             current_page=1,
+                             total_pages=1,
+                             query=query)
+                             
+    except Exception as e:
+        return redirect(url_for('main.index'))
+
 @main.route('/add_url', methods=['POST'])
 def add_url():
     url = request.form.get('url')

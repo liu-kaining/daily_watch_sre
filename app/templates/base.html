@@ -10,6 +10,7 @@ Date: 2025-02-16
     <title>{% block title %}{% endblock %} - Daily Watch SRE</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     {% block styles %}{% endblock %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <nav>
@@ -29,16 +30,48 @@ Date: 2025-02-16
             <span class="time"></span>
         </div>
         <div class="right">
+            <button id="addArticleBtn" class="add-btn" onclick="showModal()">
+                <i class="fas fa-plus"></i> 添加文章
+            </button>
+            <span class="divider">|</span>
             <a href="https://github.com/liu-kaining/daily_watch_sre" target="_blank">GitHub</a>
-            <span>|</span>
+            <span class="divider">|</span>
             <span>作者: liqian_liukaining</span>
         </div>
     </nav>
     <main>
         {% block content %}{% endblock %}
     </main>
+
+    <!-- 添加文章模态框 -->
+    <div id="addArticleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">添加文章</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addArticleForm" class="add-article-form">
+                    <div class="form-group">
+                        <label for="articleUrl">文章链接</label>
+                        <input type="url" id="articleUrl" name="url" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="articleToken">口令</label>
+                        <input type="password" id="articleToken" name="token" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal()">取消</button>
+                <button class="modal-btn modal-btn-primary" onclick="submitArticle()">添加</button>
+            </div>
+        </div>
+    </div>
+
     {% block scripts %}{% endblock %}
     <script src="{{ url_for('static', filename='js/datetime.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
 ```
