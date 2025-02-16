@@ -51,9 +51,10 @@ Daily Watch SRE&AI
 -------------------
 
 1. 克隆仓库
+```
     git clone https://github.com/liu-kaining/daily_watch_sre.git
     cd daily_watch_sre
-
+```
 2. 创建虚拟环境
 ```
     python -m venv venv
@@ -62,7 +63,9 @@ Daily Watch SRE&AI
     .\venv\Scripts\activate  # Windows
 ```
 3. 安装依赖
-    `pip install -r requirements.txt`
+```
+pip install -r requirements.txt
+```
 
 4. 初始化数据目录
 ```
