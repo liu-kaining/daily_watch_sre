@@ -51,54 +51,54 @@ Daily Watch SRE&AI
 -------------------
 
 1. 克隆仓库
-   git clone https://github.com/liu-kaining/daily_watch_sre.git
-   cd daily_watch_sre
+    git clone https://github.com/liu-kaining/daily_watch_sre.git
+    cd daily_watch_sre
 
 2. 创建虚拟环境
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   # 或
-   .\venv\Scripts\activate  # Windows
+    python -m venv venv
+    source venv/bin/activate  # Linux/Mac
+    # 或
+    .\venv\Scripts\activate  # Windows
 
 3. 安装依赖
-   pip install -r requirements.txt
+    pip install -r requirements.txt
 
 4. 初始化数据目录
-   mkdir -p app/data
-   touch app/data/articles.json
-   echo "[]" > app/data/articles.json
+    mkdir -p app/data
+    touch app/data/articles.json
+    echo "[]" > app/data/articles.json
 
 5. 运行应用
-   python run.py
+    python run.py
 
 6. 访问应用
-   浏览器访问 http://localhost:5000
+    浏览器访问 http://localhost:5000
 
 
 项目结构
 -------------------
 
-daily_watch_sre/
-├── app/                    # 应用主目录
-│   ├── __init__.py        # 应用初始化
-│   ├── routes/            # 路由控制
-│   │   ├── __init__.py
-│   │   └── views.py       # 视图函数
-│   ├── models/            # 数据模型
-│   │   ├── __init__.py
-│   │   └── article.py     # 文章模型
-│   ├── static/            # 静态资源
-│   │   ├── css/          # 样式文件
-│   │   └── js/           # JavaScript文件
-│   ├── templates/         # 模板文件
-│   │   ├── base.html     # 基础模板
-│   │   └── index.html    # 主页模板
-│   └── data/             # 数据存储
-│       └── articles.json  # 文章数据
-├── docs/                  # 文档
-├── requirements.txt       # 依赖清单
-├── run.py                # 启动脚本
-└── README.md             # 项目说明
+    daily_watch_sre/
+    ├── app/                    # 应用主目录
+    │   ├── __init__.py        # 应用初始化
+    │   ├── routes/            # 路由控制
+    │   │   ├── __init__.py
+    │   │   └── views.py       # 视图函数
+    │   ├── models/            # 数据模型
+    │   │   ├── __init__.py
+    │   │   └── article.py     # 文章模型
+    │   ├── static/            # 静态资源
+    │   │   ├── css/          # 样式文件
+    │   │   └── js/           # JavaScript文件
+    │   ├── templates/         # 模板文件
+    │   │   ├── base.html     # 基础模板
+    │   │   └── index.html    # 主页模板
+    │   └── data/             # 数据存储
+    │       └── articles.json  # 文章数据
+    ├── docs/                  # 文档
+    ├── requirements.txt       # 依赖清单
+    ├── run.py                # 启动脚本
+    └── README.md             # 项目说明
 
 
 使用说明
@@ -124,12 +124,12 @@ daily_watch_sre/
 开发计划
 -------------------
 
-[ ] 添加文章标签功能
-[ ] 支持文章搜索
-[ ] 添加文章归档功能
-[ ] 支持导出/导入数据
-[ ] 添加 Docker 支持
-[ ] 支持多用户管理
+* [ ] 添加文章标签功能
+* [ ] 支持文章搜索
+* [ ] 添加文章归档功能
+* [ ] 支持导出/导入数据
+* [ ] 添加 Docker 支持
+* [ ] 支持多用户管理
 
 
 常见问题
