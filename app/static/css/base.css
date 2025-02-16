@@ -100,7 +100,21 @@ nav span {
     border-radius: 18px;
 }
 
-.datetime-display .date {
+.article-count {
+    font-size: 15px;
+    color: white;
+}
+
+#article-total {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    margin: 0 4px;
+}
+
+/* 保持原有的日期样式 */
+.datetime-display .date,
+.datetime-display .time {
     font-size: 15px;
     font-weight: normal;
     color: white;

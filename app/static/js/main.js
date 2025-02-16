@@ -177,6 +177,117 @@ function handleArticleSubmit() {
             showModal('添加成功', 
                 '<div class="success-message">文章已成功添加到收藏列表</div>',
                 () => {
+                    updateArticleCount();  // 更新文章统计
+                    window.location.href = '/?page=1';
+                }
+            );
+        } else {
+            showModal('添加失败', 
+                `<div class="error-message">${data.message || '添加文章失败，请重试'}</div>`
+            );
+        }
+    })
+    .catch(error => {
+        showModal('错误', '<div class="error-message">添加文章失败，请重试</div>');
+    });
+}
+
+// 更新文章总数
+function updateArticleCount() {
+    fetch('/get_article_count')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('total-articles').textContent = data.count;
+        });
+}
+
+// 在页面加载时更新文章数
+document.addEventListener('DOMContentLoaded', function() {
+    updateArticleCount();
+    // ... 其他初始化代码 ...
+});
+
+// 在文章添加成功后更新统计
+function handleArticleSubmit() {
+    const url = document.getElementById('article-url').value;
+    const token = document.getElementById('token-input').value;
+    
+    if (!url || !token) {
+        showModal('提示', '<div class="error-message">请填写完整信息</div>');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('url', url);
+    formData.append('token', token);
+    
+    fetch('/add_url', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showModal('添加成功', 
+                '<div class="success-message">文章已成功添加到收藏列表</div>',
+                () => {
+                    window.location.href = '/?page=1';
+                }
+            );
+        } else {
+            showModal('添加失败', 
+                `<div class="error-message">${data.message || '添加文章失败，请重试'}</div>`
+            );
+        }
+    })
+    .catch(error => {
+        showModal('错误', '<div class="error-message">添加文章失败，请重试</div>');
+    });
+}
+
+// 更新文章统计
+function updateArticleCount() {
+    fetch('/api/stats/articles')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('article-total').textContent = data.data.total;
+            }
+        })
+        .catch(error => console.error('获取文章统计失败:', error));
+}
+
+// 在页面加载时更新统计
+document.addEventListener('DOMContentLoaded', function() {
+    updateArticleCount();
+    // ... 其他初始化代码 ...
+});
+
+// 在添加文章成功后更新统计
+function handleArticleSubmit() {
+    const url = document.getElementById('article-url').value;
+    const token = document.getElementById('token-input').value;
+    
+    if (!url || !token) {
+        showModal('提示', '<div class="error-message">请填写完整信息</div>');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('url', url);
+    formData.append('token', token);
+    
+    fetch('/add_url', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showModal('添加成功', 
+                '<div class="success-message">文章已成功添加到收藏列表</div>',
+                () => {
+                    updateArticleCount();  // 更新文章统计
                     window.location.href = '/?page=1';
                 }
             );

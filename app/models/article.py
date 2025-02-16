@@ -9,8 +9,19 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs
 from itertools import groupby
 from operator import itemgetter
+import os
 
 class Article:
+    ARTICLES_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'articles.json')
+    
+    @classmethod
+    def get_total_count(cls):
+        try:
+            with open(cls.ARTICLES_FILE, 'r', encoding='utf-8') as f:
+                articles = json.load(f)
+                return len(articles)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return 0
     def __init__(self, url, title=None, source=None, created_at=None):
         self.url = self._normalize_url(url)
         self.title = title
@@ -128,3 +139,11 @@ class Article:
                 'total_pages': 0,
                 'current_page': 1
             }
+    @staticmethod
+    def get_total_count():
+        try:
+            with open(Article.ARTICLES_FILE, 'r', encoding='utf-8') as f:
+                articles = json.load(f)
+                return len(articles)
+        except (FileNotFoundError, json.JSONDecodeError):
+            return 0
