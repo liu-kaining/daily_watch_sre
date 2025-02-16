@@ -33,4 +33,4 @@ var/
 Thumbs.db
 
 # Application Data
-app/data/articles.json
+!app/data/articles.json
