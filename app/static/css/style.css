@@ -175,6 +175,20 @@ nav {
     align-items: center;
 }
 
+.date-header.today {
+    background: #fff7ed;
+    color: #ea580c;
+    font-weight: 600;
+}
+
+.date-header.today .date {
+    color: #ea580c;
+}
+
+.date-header.today .toggle-icon {
+    color: #ea580c;
+}
+
 .date {
     font-weight: 500;
     color: #374151;
@@ -204,10 +218,22 @@ nav {
     cursor: pointer;
     border-radius: 8px;
     margin: 8px 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     background: white;
-    border: 1px solid #f1f5f9;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+}
+
+.article-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #e2e8f0;
+    background: #f8fafc;
+}
+
+.article-item.active {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
 }
 
 .article-title {

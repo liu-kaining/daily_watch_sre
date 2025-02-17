@@ -71,6 +71,36 @@ Daily Watch SRE&AI
     浏览器访问 http://localhost:5000
 ```
 
+Docker 部署
+-------------------
+
+1. 构建镜像
+```
+    docker build -t daily-watch-sre .
+```
+
+2. 运行容器
+```
+    docker run -d -p 8080:8080 -v "$(pwd)/app/data:/app/app/data" --name daily-watch daily-watch-sre
+```
+
+3. 查看容器状态
+```
+    docker ps
+    docker logs daily-watch
+```
+
+4. 访问应用
+```
+    浏览器访问 http://localhost:8080
+```
+
+5. 停止和删除容器
+```
+    docker stop daily-watch
+    docker rm daily-watch
+```
+
 项目结构
 -------------------
 ```
@@ -93,6 +123,7 @@ Daily Watch SRE&AI
     ├── requirements.txt       # 依赖清单
     ├── run.py                # 启动脚本
     └── README.md             # 项目说明
+
 ```
 使用说明
 -------------------
