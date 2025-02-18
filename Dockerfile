@@ -31,5 +31,9 @@ RUN mkdir -p app/data && \
 # 暴露端口
 EXPOSE 8080
 
+# 设置时区为东八区
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # 启动命令
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "4", "run:app"]

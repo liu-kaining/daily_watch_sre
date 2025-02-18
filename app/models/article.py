@@ -19,9 +19,8 @@ class Article:
         if created_at:
             self.created_at = created_at
         else:
-            # 使用 astimezone() 确保时区正确
-            local_time = datetime.now(timezone(timedelta(hours=8)))
-            self.created_at = local_time.strftime("%Y-%m-%d %H:%M:%S")
+            # Docker 容器已设置东八区，直接使用系统时间
+            self.created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if not title or not source:
             self._fetch_article_info()
 
