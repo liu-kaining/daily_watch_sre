@@ -3,4 +3,4 @@ python-dotenv==1.0.0
 pytest==7.4.2
 requests==2.31.0
 beautifulsoup4==4.12.2
-gunicorn==21.2.0zz
+gunicorn==21.2.0
