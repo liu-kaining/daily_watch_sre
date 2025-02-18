@@ -68,7 +68,7 @@ Daily Watch SRE&AI
 
 6. 访问应用
 ```
-    浏览器访问 http://localhost:5000
+    浏览器访问 http://localhost:8080
 ```
 
 Docker 部署
