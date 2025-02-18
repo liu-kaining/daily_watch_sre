@@ -104,7 +104,7 @@ class Article:
             # 按日期分组
             groups = {}
             for article in data:
-                date = article['created_at'][:8]  # 只取日期部分
+                date = article['created_at'][:10]  # 只取日期部分
                 if date not in groups:
                     groups[date] = []
                 groups[date].append(article)
