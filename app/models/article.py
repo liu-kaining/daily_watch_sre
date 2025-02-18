@@ -19,7 +19,12 @@ class Article:
         if created_at:
             self.created_at = created_at
         else:
-            beijing_time = datetime.utcnow().replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=8)))
+            # 直接使用本地时间，因为服务器已经设置为东八区
+            beijing_time = datetime.now()
+            # 如果需要确保时区，可以显式设置
+            if beijing_time.tzinfo is None:
+                beijing_tz = timezone(timedelta(hours=8))
+                beijing_time = beijing_time.replace(tzinfo=beijing_tz)
             self.created_at = beijing_time.strftime("%Y-%m-%d %H:%M:%S")
         if not title or not source:
             self._fetch_article_info()
