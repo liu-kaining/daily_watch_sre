@@ -3,7 +3,7 @@ Author: liqian_liukaining
 Date: 2025-02-16
 """
 import json
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -15,7 +15,12 @@ class Article:
         self.url = url
         self.title = title
         self.source = source
-        self.created_at = created_at or datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # 使用东八区时间
+        if created_at:
+            self.created_at = created_at
+        else:
+            beijing_time = datetime.utcnow().replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=8)))
+            self.created_at = beijing_time.strftime("%Y-%m-%d %H:%M:%S")
         if not title or not source:
             self._fetch_article_info()
 
