@@ -15,12 +15,12 @@ class Article:
         self.url = url
         self.title = title
         self.source = source
-        # 使用系统本地时间
+        # 处理时间
         if created_at:
             self.created_at = created_at
         else:
-            # 直接使用系统本地时间，不需要时区转换
-            local_time = datetime.now()
+            # 使用 astimezone() 确保时区正确
+            local_time = datetime.now(timezone(timedelta(hours=8)))
             self.created_at = local_time.strftime("%Y-%m-%d %H:%M:%S")
         if not title or not source:
             self._fetch_article_info()
