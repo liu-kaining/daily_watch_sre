@@ -31,9 +31,12 @@ RUN mkdir -p app/data && \
 # 暴露端口
 EXPOSE 8080
 
-# 设置时区为东八区
+# 安装时区数据包并设置时区
+RUN apt-get update && apt-get install -y tzdata
 ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone && \
+    dpkg-reconfigure -f noninteractive tzdata
 
 # 启动命令
 CMD ["gunicorn", "--bind", "0.0.0.0:8080", "--workers", "4", "run:app"]

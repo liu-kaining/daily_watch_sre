@@ -19,8 +19,17 @@ class Article:
         if created_at:
             self.created_at = created_at
         else:
-            # Docker 容器已设置东八区，直接使用系统时间
-            self.created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            try:
+                # 检查系统时区是否正确
+                current_time = datetime.now()
+                if current_time.astimezone().strftime('%z') != '+0800':
+                    # 如果系统时区不是东八区，手动设置
+                    current_time = datetime.now(timezone(timedelta(hours=8)))
+                self.created_at = current_time.strftime("%Y-%m-%d %H:%M:%S")
+            except Exception:
+                # 如果出现任何问题，强制使用东八区
+                current_time = datetime.now(timezone(timedelta(hours=8)))
+                self.created_at = current_time.strftime("%Y-%m-%d %H:%M:%S")
         if not title or not source:
             self._fetch_article_info()
 
