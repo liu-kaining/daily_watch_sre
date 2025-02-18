@@ -1,12 +1,3 @@
-// 欢迎界面函数
-// 将 showWelcome 函数移到全局作用域
-// 删除以下代码
-// window.showWelcome = function() {
-//     const frame = document.getElementById('content-frame');
-//     const welcomeHtml = `...`;
-//     frame.srcdoc = welcomeHtml;
-// }
-
 // 加载文章内容函数
 function loadContent(url) {
     // 移除之前的选中状态
@@ -385,12 +376,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-
-    // 默认显示欢迎界面
-    // 删除这段代码
-    // if (!window.location.search.includes('load=')) {
-    //     showWelcome();
-    // }
 
     // 添加文章按钮事件
     const addArticleBtn = document.getElementById('addArticleBtn');
