@@ -11,9 +11,14 @@ ENV PYTHONUNBUFFERED=1
 ENV PIP_NO_CACHE_DIR=1
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 ENV PIP_PROGRESS_BAR=off
+ENV DASHSCOPE_API_KEY=""
 
 # 复制配置文件
 COPY config.py /app/config.py
+COPY .env* .
+
+# 如果存在 .env 文件则导入环境变量
+RUN if [ -f .env ]; then export $(cat .env | xargs); fi
 
 # 复制其他项目文件
 COPY requirements.txt .

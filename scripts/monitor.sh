@@ -18,6 +18,7 @@ check_and_restart() {
         sudo docker build -t daily-watch-sre .
         sudo docker run -d -p 8080:8080 \
             -v "$(pwd)/app/data:/app/app/data" \
+            -e DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY:-""} \
             --name $CONTAINER_NAME \
             daily-watch-sre
         
