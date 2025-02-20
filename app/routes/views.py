@@ -79,6 +79,73 @@ def search():
     except Exception as e:
         return redirect(url_for('main.index'))
 
+@main.route('/api/summarize', methods=['POST'])
+def summarize_article():
+    try:
+        data = request.get_json()
+        if not data or 'url' not in data:
+            return jsonify({
+                'success': False,
+                'message': '缺少文章 URL'
+            }), 400
+
+        # 获取文章内容
+        article_content = Article.get_article_content(data['url'])
+        if not article_content:
+            return jsonify({
+                'success': False,
+                'message': '无法获取文章内容'
+            }), 404
+
+        # 在需要时初始化 AI 服务
+        ai_service = AIService()
+        # 生成总结
+        result = ai_service.generate_summary(article_content)
+        return jsonify(result)
+
+    except ValueError as e:
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 500
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'处理请求时发生错误: {str(e)}'
+        }), 500
+
+@main.route('/article/<path:url>')
+def article(url):
+    # 获取当前文章数据
+    article_data = None
+    groups = []
+    
+    try:
+        with open('app/data/articles.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            groups = data.get('groups', [])
+            # 查找当前文章
+            for group in groups:
+                for article in group['articles']:
+                    if article['url'] == url:
+                        article_data = article
+                        break
+                if article_data:
+                    break
+    except Exception as e:
+        print(f"Error loading article data: {e}")
+    
+    return render_template('article.html', 
+                         url=url,
+                         title=article_data['title'] if article_data else '',
+                         article=article_data,
+                         groups=groups)
+
+@main.route('/get_article_count')
+def get_article_count():
+    count = Article.get_total_count()
+    return jsonify({'count': count})
+
 @main.route('/add_url', methods=['POST'])
 def add_url():
     url = request.form.get('url')
@@ -133,9 +200,60 @@ def add_url():
 def views(url):
     """获取文章内容"""
     try:
-        # URL 解码
-        decoded_url = urllib.parse.unquote(url)
-        return get_content(decoded_url)
+        # 直接处理微信文章 URL
+        if 'mp.weixin.qq.com' in url:
+            if not url.startswith('http'):
+                if url.startswith('s/'):
+                    url = f'https://mp.weixin.qq.com/{url}'
+                else:
+                    url = f'https://mp.weixin.qq.com/s/{url}'
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Referer': 'https://mp.weixin.qq.com/'
+        }
+        response = requests.get(url, headers=headers)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # 移除评论和二维码相关的元素
+        for elem in soup.find_all(['script', 'div'], class_=lambda x: x and ('comment' in x.lower() or 'qr_code' in x.lower() if x else False)):
+            elem.decompose()
+            
+        # 移除二维码相关的链接
+        for link in soup.find_all('link', href=lambda x: x and 'qrcode' in x.lower() if x else False):
+            link.decompose()
+            
+        # 处理所有图片链接
+        for img in soup.find_all('img'):
+            if img.get('data-src'):
+                img['src'] = f"/proxy_image?url={img['data-src']}"
+                img['data-src'] = img['src']
+            elif img.get('src'):
+                img['src'] = f"/proxy_image?url={img['src']}"
+
+        # 添加必要的样式
+        style_tag = soup.new_tag('style')
+        style_tag.string = '''
+            body {
+                margin: 0;
+                padding: 20px;
+            }
+            img {
+                max-width: 100%;
+                height: auto;
+                margin: 10px auto;
+            }
+            #js_content {
+                padding: 20px;
+                max-width: 100%;
+            }
+        '''
+        if soup.head:
+            soup.head.append(style_tag)
+        else:
+            soup.body.insert(0, style_tag)
+
+        return str(soup)
     except Exception as e:
         print(f"Error getting article content: {e}")
         return '获取文章内容失败', 500
