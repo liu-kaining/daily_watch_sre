@@ -5,12 +5,13 @@ Date: 2025-02-16
 from flask import render_template, request, jsonify, redirect, url_for, Response
 from app.routes import main
 from app.models.article import Article
+from app.services.ai_service import AIService
 from app.config.settings import verify_token
 import requests
 from bs4 import BeautifulSoup
 import json
 from datetime import datetime
-import re
+import urllib.parse
 
 @main.route('/guide')
 def guide():
@@ -128,9 +129,23 @@ def add_url():
             'message': f'添加文章失败：{str(e)}'
         })
 
+@main.route('/views/<path:url>')
+def views(url):
+    """获取文章内容"""
+    try:
+        # URL 解码
+        decoded_url = urllib.parse.unquote(url)
+        return get_content(decoded_url)
+    except Exception as e:
+        print(f"Error getting article content: {e}")
+        return '获取文章内容失败', 500
+
 @main.route('/get_content')
 def get_content():
     url = request.args.get('url')
+    if not url:
+        url = request.path[7:]  # 移除 '/views/' 前缀
+        
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -179,6 +194,7 @@ def get_content():
 
         return str(soup)
     except Exception as e:
+        print(f"Error loading content: {e}")
         return "无法加载文章内容"
 
 @main.route('/proxy_image')

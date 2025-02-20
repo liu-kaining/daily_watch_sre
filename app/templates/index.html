@@ -16,12 +16,14 @@
 
     {% block styles %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/summary.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     {% endblock %}
 
     {% block content %}
     <div class="container">
-        <div class="left-panel">
+        <!-- 左侧文章列表 -->
+        <aside class="left-panel">
             <div class="header-actions">
                 <form action="/search" method="GET" class="search-form">
                     <input type="text" name="q" placeholder="搜索标题或作者..." required>
@@ -31,7 +33,6 @@
                 </form>
             </div>
             
-            <!-- 文章列表区域 -->
             <div class="article-list">
                 {% for group in groups %}
                 <div class="date-group">
@@ -41,7 +42,9 @@
                     </div>
                     <div class="article-group">
                         {% for article in group.articles %}
-                        <div class="article-item" onclick="loadContent('{{ article.url }}')">
+                        <!-- 修改文章项的点击事件 -->
+                        <!-- 修改文章列表项的结构 -->
+                        <div class="article-item" data-url="{{ article.url }}">
                             <div class="article-title">{{ article.title }}</div>
                             <div class="article-meta">
                                 <div class="meta-left">
@@ -57,64 +60,86 @@
                 </div>
                 {% endfor %}
             </div>
-    
-            <!-- 分页控件 -->
-            {% if total_pages > 1 %}
-            <div class="pagination">
-                {% if current_page > 1 %}
-                <a href="?page={{ current_page - 1 }}" class="page-btn">&lt; 上一页</a>
-                {% endif %}
-                
-                <span class="page-info">{{ current_page }} / {{ total_pages }}</span>
-                
-                {% if current_page < total_pages %}
-                <a href="?page={{ current_page + 1 }}" class="page-btn">下一页 &gt;</a>
-                {% endif %}
-            </div>
-            {% endif %}
-    
-            <!-- 底部版权信息 -->
-            <div class="footer-info">
-                <div class="project-name">Daily Watch SRE&AI</div>
-                <div class="copyright">Created by <span class="author">liqian_liukaining</span> © 2025</div>
-            </div>
-        </div>
         
-        <!-- 右侧内容展示区 -->
-        <div class="right-panel">
-            <iframe id="content-frame" name="content-frame" src="{{ url_for('static', filename='guide.html') }}"></iframe>
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% if current_page > 1 %}
+            <a href="?page={{ current_page - 1 }}" class="page-btn">&lt; 上一页</a>
+            {% endif %}
+            <span class="page-info">{{ current_page }} / {{ total_pages }}</span>
+            {% if current_page < total_pages %}
+            <a href="?page={{ current_page + 1 }}" class="page-btn">下一页 &gt;</a>
+            {% endif %}
         </div>
-    </div>
+        {% endif %}
+    
+        <div class="footer-info">
+            <div class="project-name">Daily Watch SRE&AI</div>
+            <div class="copyright">Created by <span class="author">liqian_liukaining</span> © 2025</div>
+        </div>
+    </aside>
+    
+    <!-- 中间内容区 -->
+    <main class="middle-panel">
+        <div class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <div class="loading-text">正在加载文章...</div>
+        </div>
+        <iframe id="content-frame" name="content-frame" src="{{ url_for('static', filename='guide.html') }}"></iframe>
+    </main>
+    
+    <!-- 右侧工具栏 -->
+    <aside class="right-panel">
+        <div class="summary-section">
+            <h3>AI 总结</h3>
+            <button id="summaryBtn" class="summary-btn">一键AI总结</button>
+            <div id="summaryContent" class="summary-content"></div>
+        </div>
+        <div class="comment-section">
+            <h3>评论区</h3>
+            <p class="placeholder">功能开发中...</p>
+        </div>
+    </aside>
+</div>
 
-    <!-- 添加文章模态框 -->
-    <div id="addArticleModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">添加文章</h3>
-                <span class="close">&times;</span>
-            </div>
-            <div class="modal-body">
-                <form id="addArticleForm" class="add-article-form">
-                    <div class="form-group">
-                        <label for="articleUrl">文章链接</label>
-                        <input type="url" id="articleUrl" name="url" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="articleToken">口令</label>
-                        <input type="password" id="articleToken" name="token" required>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-secondary" onclick="closeModal()">取消</button>
-                <button class="modal-btn modal-btn-primary" onclick="submitArticle()">添加</button>
-            </div>
+<!-- 添加文章模态框 -->
+<div id="addArticleModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">添加文章</h3>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="addArticleForm" class="add-article-form">
+                <div class="form-group">
+                    <label for="articleUrl">文章链接</label>
+                    <input type="url" id="articleUrl" name="url" required>
+                </div>
+                <div class="form-group">
+                    <label for="articleToken">口令</label>
+                    <input type="password" id="articleToken" name="token" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn modal-btn-secondary" onclick="closeModal()">取消</button>
+            <button class="modal-btn modal-btn-primary" onclick="submitArticle()">添加</button>
         </div>
     </div>
+</div>
     {% endblock %}
 
     {% block scripts %}
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- 在其他 script 标签之后添加 -->
+    <script src="{{ url_for('static', filename='js/summary.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化 AI 总结模块
+            AISummary.init();
+        });
+    </script>
     {% endblock %}
 </body>
 </html>

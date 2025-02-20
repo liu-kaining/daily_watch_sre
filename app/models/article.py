@@ -11,10 +11,11 @@ import os
 class Article:
     ARTICLES_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'articles.json')
     
-    def __init__(self, url, title=None, source=None, created_at=None):
+    def __init__(self, url, title=None, source=None, created_at=None, summary=None):
         self.url = url
         self.title = title
         self.source = source
+        self.summary = summary
         # 处理时间
         if created_at:
             self.created_at = created_at
@@ -71,10 +72,28 @@ class Article:
             'url': a.url,
             'title': a.title,
             'source': a.source,
-            'created_at': a.created_at
+            'created_at': a.created_at,
+            'summary': getattr(a, 'summary', None)
         } for a in articles]
         with open(f'app/data/{filename}', 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
+
+    @staticmethod
+    def update_summary(url, summary):
+        try:
+            with open(Article.ARTICLES_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            
+            for article in data:
+                if article['url'] == url:
+                    article['summary'] = summary
+                    break
+            
+            with open(Article.ARTICLES_FILE, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+            return True
+        except Exception:
+            return False
 
     @staticmethod
     def load_from_file(filename='articles.json', page=1, per_page=5):
@@ -120,3 +139,16 @@ class Article:
                 return len(articles)
         except (FileNotFoundError, json.JSONDecodeError):
             return 0
+    @classmethod
+    def get_content_by_url(cls, url):
+        """根据 URL 获取文章内容"""
+        try:
+            response = requests.get(url)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            content = soup.find('div', class_='rich_media_content')
+            if content:
+                return content.get_text(strip=True)
+            return None
+        except Exception as e:
+            print(f"Error getting article content: {e}")
+            return None

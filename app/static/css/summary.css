@@ -1,0 +1,97 @@
+/* AI 总结面板样式 */
+.right-panel .summary-section {
+    padding: 20px;
+}
+
+.right-panel .summary-section h3 {
+    font-size: 16px;
+    color: #1e40af;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.summary-btn {
+    width: 100%;
+    padding: 12px;
+    background: #1e40af;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+}
+
+.summary-btn:hover {
+    background: #1e3a8a;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);
+}
+
+.summary-btn:active {
+    transform: translateY(0);
+}
+
+.summary-btn:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.summary-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #334155;
+}
+
+.summary-content .placeholder {
+    color: #94a3b8;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 14px;
+}
+
+.summary-content .loading {
+    text-align: center;
+    color: #1e40af;
+    padding: 20px 0;
+}
+
+.summary-content .error-message {
+    color: #ef4444;
+    margin-bottom: 12px;
+    padding: 12px;
+    background: #fef2f2;
+    border-radius: 6px;
+    border: 1px solid #fee2e2;
+}
+
+.summary-content .retry-btn {
+    padding: 8px 16px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.summary-content .retry-btn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+.summary-text {
+    white-space: pre-wrap;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #1e293b;
+}

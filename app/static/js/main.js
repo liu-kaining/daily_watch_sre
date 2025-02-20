@@ -1,23 +1,59 @@
 // 加载文章内容函数
 function loadContent(url) {
-    // 移除之前的选中状态
-    document.querySelectorAll('.article-item.active').forEach(item => {
-        item.classList.remove('active');
-    });
+    // 修改加载动画的位置，只在中间内容区域显示
+    const contentFrame = document.getElementById('content-frame');
+    const contentWrapper = contentFrame.parentElement;  // 获取 iframe 的父元素
     
-    // 添加新的选中状态
-    const currentItem = event.currentTarget;
-    currentItem.classList.add('active');
+    // 创建或获取加载动画元素（确保只在中间区域显示）
+    let loading = contentWrapper.querySelector('.loading');
+    if (!loading) {
+        loading = document.createElement('div');
+        loading.className = 'loading';
+        loading.innerHTML = '<div class="spinner"></div><div>正在加载文章...</div>';
+        contentWrapper.appendChild(loading);
+    }
+    loading.style.display = 'flex';
+
+    // 更新文章选中状态
+    const articles = document.querySelectorAll('.article-item');
+    articles.forEach(item => item.classList.remove('active'));
+    const currentArticle = document.querySelector(`.article-item[data-url="${url}"]`);
+    if (currentArticle) {
+        currentArticle.classList.add('active');
+    }
+
+    // 加载文章内容到 iframe
+    if (contentFrame) {
+        fetch(`/get_content?url=${encodeURIComponent(url)}`)
+            .then(response => response.text())
+            .then(html => {
+                contentFrame.srcdoc = html;
+                // 在 loadContent 函数中，contentFrame.onload 回调里添加
+                contentFrame.onload = () => {
+                    loading.style.display = 'none';
+                    // 更新右侧总结面板
+                    AISummary.updatePanel(url);
+                };
+            })
+            .catch(error => {
+                console.error('Error loading content:', error);
+                loading.style.display = 'none';
+            });
+    }
+}
+
+// 文章组展开/折叠
+function toggleGroup(header) {
+    const group = header.closest('.date-group');
+    const articleGroup = group.querySelector('.article-group');
     
-    fetch(`/get_content?url=${encodeURIComponent(url)}`)
-        .then(response => response.text())
-        .then(html => {
-            const frame = document.getElementById('content-frame');
-            frame.srcdoc = html;
-        })
-        .catch(error => {
-            console.error('Error loading content:', error);
-        });
+    if (group.classList.contains('collapsed')) {
+        group.classList.remove('collapsed');
+        articleGroup.style.maxHeight = articleGroup.scrollHeight + 'px';
+    } else {
+        group.classList.add('collapsed');
+        articleGroup.style.maxHeight = '0';
+    }
 }
 
 // 辅助函数：显示模态框
@@ -86,20 +122,6 @@ function normalizeUrl(url) {
     return url;
 }
 
-// 折叠功能
-function toggleGroup(header) {
-    const group = header.closest('.date-group');
-    const articleGroup = group.querySelector('.article-group');
-    
-    if (group.classList.contains('collapsed')) {
-        group.classList.remove('collapsed');
-        articleGroup.style.maxHeight = articleGroup.scrollHeight + 'px';
-    } else {
-        group.classList.add('collapsed');
-        articleGroup.style.maxHeight = '0';
-    }
-}
-
 // 口令验证对话框
 function showTokenDialog() {
     return new Promise((resolve) => {
@@ -144,7 +166,7 @@ function showAddArticleDialog() {
     setTimeout(() => document.getElementById('article-url').focus(), 100);
 }
 
-// 处理文章提交
+// 处理文章提交（保留唯一的版本）
 function handleArticleSubmit() {
     const url = document.getElementById('article-url').value;
     const token = document.getElementById('token-input').value;
@@ -169,7 +191,9 @@ function handleArticleSubmit() {
                 '<div class="success-message">文章已成功添加到收藏列表</div>',
                 () => {
                     updateArticleCount();  // 更新文章统计
-                    window.location.href = '/?page=1';
+                    // 使用 AJAX 更新文章列表
+                    updateArticleList();
+                    hideModal();
                 }
             );
         } else {
@@ -184,112 +208,86 @@ function handleArticleSubmit() {
 }
 
 // 更新文章总数
+// 修改更新文章总数函数
 function updateArticleCount() {
-    fetch('/get_article_count')
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('total-articles').textContent = data.count;
-        });
-}
+    const totalArticles = document.querySelector('.article-count');
+    if (!totalArticles) return;
 
-// 在页面加载时更新文章数
-document.addEventListener('DOMContentLoaded', function() {
-    updateArticleCount();
-    // ... 其他初始化代码 ...
-});
+    // 保持原有显示，避免闪烁
+    const currentCount = totalArticles.querySelector('strong')?.textContent || '0';
+    totalArticles.innerHTML = `当前总计收藏 <strong class="count-number">${currentCount}</strong> 篇文章`;
 
-// 在文章添加成功后更新统计
-function handleArticleSubmit() {
-    const url = document.getElementById('article-url').value;
-    const token = document.getElementById('token-input').value;
-    
-    if (!url || !token) {
-        showModal('提示', '<div class="error-message">请填写完整信息</div>');
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append('url', url);
-    formData.append('token', token);
-    
-    fetch('/add_url', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showModal('添加成功', 
-                '<div class="success-message">文章已成功添加到收藏列表</div>',
-                () => {
-                    window.location.href = '/?page=1';
-                }
-            );
-        } else {
-            showModal('添加失败', 
-                `<div class="error-message">${data.message || '添加文章失败，请重试'}</div>`
-            );
-        }
-    })
-    .catch(error => {
-        showModal('错误', '<div class="error-message">添加文章失败，请重试</div>');
-    });
-}
-
-// 更新文章统计
-function updateArticleCount() {
     fetch('/api/stats/articles')
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                document.getElementById('article-total').textContent = data.data.total;
+            if (totalArticles) {
+                const count = data.data.total || '0';
+                totalArticles.innerHTML = `当前总计收藏 <strong class="count-number">${count}</strong> 篇文章`;
             }
         })
-        .catch(error => console.error('获取文章统计失败:', error));
+        .catch(error => {
+            console.error('获取文章统计失败:', error);
+        });
 }
 
-// 在页面加载时更新统计
-document.addEventListener('DOMContentLoaded', function() {
-    updateArticleCount();
-    // ... 其他初始化代码 ...
-});
+// 添加新函数：更新文章列表
+// 修改更新文章列表函数
+function updateArticleList() {
+    // 修改为正确的接口路径
+    fetch('/?ajax=1')  // 使用 ajax 参数来获取只包含文章列表的 HTML
+        .then(response => response.text())
+        .then(html => {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            // 获取新的文章列表内容
+            const newArticleList = tempDiv.querySelector('.article-list');
+            if (newArticleList) {
+                const articleList = document.querySelector('.article-list');
+                articleList.innerHTML = newArticleList.innerHTML;
+                // 重新绑定事件
+                initializeArticleListEvents();
+            }
+        })
+        .catch(error => {
+            console.error('更新文章列表失败:', error);
+            // 如果更新失败，提示用户
+            showModal('错误', '<div class="error-message">更新文章列表失败，请刷新页面</div>');
+        });
+}
 
-// 在添加文章成功后更新统计
-function handleArticleSubmit() {
-    const url = document.getElementById('article-url').value;
-    const token = document.getElementById('token-input').value;
+// 添加新函数：初始化文章列表事件
+function initializeArticleListEvents() {
+    // 重新绑定日期组折叠事件
+    document.querySelectorAll('.date-header').forEach(header => {
+        header.onclick = (e) => {
+            e.stopPropagation();
+            toggleGroup(header);
+        };
+    });
     
-    if (!url || !token) {
-        showModal('提示', '<div class="error-message">请填写完整信息</div>');
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append('url', url);
-    formData.append('token', token);
-    
-    fetch('/add_url', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showModal('添加成功', 
-                '<div class="success-message">文章已成功添加到收藏列表</div>',
-                () => {
-                    updateArticleCount();  // 更新文章统计
-                    window.location.href = '/?page=1';
-                }
-            );
-        } else {
-            showModal('添加失败', 
-                `<div class="error-message">${data.message || '添加文章失败，请重试'}</div>`
-            );
+    // 重新绑定文章点击事件
+    document.querySelectorAll('.article-item').forEach(item => {
+        const url = item.getAttribute('data-url');
+        if (url) {
+            // 移除可能存在的旧事件监听器
+            item.removeEventListener('click', item._clickHandler);
+            
+            // 创建新的事件处理函数
+            item._clickHandler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                loadContent(url);
+                return false; // 确保阻止默认行为
+            };
+            
+            // 添加新的事件监听器
+            item.addEventListener('click', item._clickHandler);
+            
+            // 移除可能存在的 href 属性
+            item.removeAttribute('href');
+            item.style.cursor = 'pointer';
         }
-    })
-    .catch(error => {
-        showModal('错误', '<div class="error-message">添加文章失败，请重试</div>');
     });
 }
 
@@ -335,51 +333,71 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // 初始化事件监听
+    initializeArticleListEvents();
+
     // 模态框关闭按钮事件
     document.querySelector('.modal .close').addEventListener('click', hideModal);
     document.querySelector('.modal-btn-secondary').addEventListener('click', hideModal);
-
-    // 表单提交处理
-    const form = document.querySelector('.add-url-form form');
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            showTokenDialog().then(token => {
-                if (!token) return;
-                
-                const formData = new FormData(form);
-                formData.append('token', token);
-                
-                fetch('/add_url', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showModal('添加成功', 
-                            '<div class="success-message">文章已成功添加到收藏列表</div>',
-                            () => {
-                                // 修改这里：直接刷新页面，不带参数
-                                window.location.href = '/?page=1';
-                            }
-                        );
-                        form.reset(); // 清空表单
-                    } else {
-                        showModal('添加失败', data.message || '添加文章失败，请重试');
-                    }
-                })
-                .catch(error => {
-                    showModal('错误', '添加文章失败，请重试');
-                });
-            });
-        });
-    }
 
     // 添加文章按钮事件
     const addArticleBtn = document.getElementById('addArticleBtn');
     if (addArticleBtn) {
         addArticleBtn.addEventListener('click', showAddArticleDialog);
+    }
+
+    // 更新文章统计
+    updateArticleCount();
+});
+// 在搜索结果返回后展开所有日期组
+function expandAllGroups() {
+    document.querySelectorAll('.date-group').forEach(group => {
+        const articleGroup = group.querySelector('.article-group');
+        group.classList.remove('collapsed');
+        if (articleGroup) {
+            articleGroup.style.maxHeight = articleGroup.scrollHeight + 'px';
+        }
+    });
+}
+
+// 修改搜索表单提交处理
+document.querySelector('.search-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const searchInput = this.querySelector('input[type="text"]');
+    const searchTerm = searchInput.value.trim();
+    
+    if (searchTerm) {
+        fetch(`/search?q=${encodeURIComponent(searchTerm)}`)
+            .then(response => response.text())
+            .then(html => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // 获取新的文章列表内容
+                const newArticleList = tempDiv.querySelector('.article-list');
+                if (newArticleList) {
+                    const articleList = document.querySelector('.article-list');
+                    
+                    // 保持滚动位置
+                    const scrollTop = articleList.scrollTop;
+                    articleList.innerHTML = newArticleList.innerHTML;
+                    articleList.scrollTop = scrollTop;
+                    
+                    // 重新绑定事件
+                    initializeArticleListEvents();
+                    
+                    // 展开所有搜索结果
+                    document.querySelectorAll('.date-group').forEach(group => {
+                        const articleGroup = group.querySelector('.article-group');
+                        if (articleGroup && articleGroup.children.length > 0) {
+                            group.classList.remove('collapsed');
+                            articleGroup.style.maxHeight = `${articleGroup.scrollHeight}px`;
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('搜索失败:', error);
+            });
     }
 });
