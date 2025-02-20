@@ -5,7 +5,7 @@ from app.services.ai_service import AIService
 @pytest.fixture(autouse=True)
 def setup_env():
     """设置测试环境变量"""
-    os.environ['DASHSCOPE_API_KEY'] = 'sk-7c92805c60294810977a61b0e649dd00'
+    os.environ['DASHSCOPE_API_KEY'] = 'YOUR_TONGYI_API_KEY'
     yield
     # 测试后清理环境变量
     if 'DASHSCOPE_API_KEY' in os.environ:
@@ -15,7 +15,7 @@ def test_ai_service_initialization():
     """测试 AI 服务初始化"""
     ai_service = AIService()
     assert ai_service is not None
-    assert ai_service.api_key == 'sk-7c92805c60294810977a61b0e649dd00'
+    assert ai_service.api_key == 'YOUR_TONGYI_API_KEY'
 
 def test_generate_summary():
     """测试文章总结生成"""
