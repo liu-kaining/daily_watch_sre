@@ -9,38 +9,106 @@ html {
     height: 100%;
 }
 
+/* 布局样式 */
 body {
-    height: 100%;
-    min-height: 100vh;
     display: flex;
+    margin: 0;
+    height: 100vh;
     overflow: hidden;
 }
 
-/* 左侧列表 */
 .article-sidebar {
-    width: 300px;
-    min-width: 300px;
-    border-right: 1px solid #e8e8e8;
-    overflow-y: auto;
-    background: #fff;
-}
-
-/* 中间内容区 */
-.article-main {
     flex: 1;
-    min-width: 0;
-    position: relative;
-    background: #fff;
+    max-width: 300px;
+    overflow-y: auto;
+    border-right: 1px solid #e9ecef;
 }
 
-/* 右侧工具栏 */
+.article-main {
+    flex: 1.2;  /* 改小这个值，让中间区域变窄 */
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
 .article-tools {
-    width: 350px;
-    min-width: 350px;
-    border-left: 1px solid #e8e8e8;
+    flex: 1.8;  /* 增大这个值，让右侧更宽 */
+    padding: 20px;
+    background: #f8f9fa;
+    border-left: 1px solid #e9ecef;
+    overflow-y: auto;
+}
+
+.article-main {
+    flex: 1.5;  /* 从 2 改为 1.5，让中间区域更窄 */
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.article-tools {
+    flex: 2;  /* 从 1.5 改为 2，让右侧更宽 */
+    min-width: 400px;  /* 增加最小宽度 */
+    padding: 20px;
+    background: #f8f9fa;
+    border-left: 1px solid #e9ecef;
+    overflow-y: auto;
+}
+
+.summary-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.summary-content {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #2c3e50;
+    margin-top: 15px;
+    min-height: 100px;
+}
+
+/* 添加打字机效果的基础样式 */
+.typing {
+    border-right: 2px solid #000;
+    animation: blink 0.75s step-end infinite;
+}
+
+@keyframes blink {
+    from, to { border-color: transparent }
+    50% { border-color: #000 }
+}
+
+/* 加载动画样式 */
+.thinking {
     display: flex;
     flex-direction: column;
-    background: #fff;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.dot-typing {
+    position: relative;
+    left: -9999px;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    background-color: #2c3e50;
+    color: #2c3e50;
+    box-shadow: 9984px 0 0 0 #2c3e50, 9999px 0 0 0 #2c3e50, 10014px 0 0 0 #2c3e50;
+    animation: dot-typing 1.5s infinite linear;
+}
+
+@keyframes dot-typing {
+    0% { box-shadow: 9984px 0 0 0 #2c3e50, 9999px 0 0 0 #2c3e50, 10014px 0 0 0 #2c3e50; }
+    16.667% { box-shadow: 9984px -10px 0 0 #2c3e50, 9999px 0 0 0 #2c3e50, 10014px 0 0 0 #2c3e50; }
+    33.333% { box-shadow: 9984px 0 0 0 #2c3e50, 9999px 0 0 0 #2c3e50, 10014px 0 0 0 #2c3e50; }
+    50% { box-shadow: 9984px 0 0 0 #2c3e50, 9999px -10px 0 0 #2c3e50, 10014px 0 0 0 #2c3e50; }
+    66.667% { box-shadow: 9984px 0 0 0 #2c3e50, 9999px 0 0 0 #2c3e50, 10014px 0 0 0 #2c3e50; }
+    83.333% { box-shadow: 9984px 0 0 0 #2c3e50, 9999px 0 0 0 #2c3e50, 10014px -10px 0 0 #2c3e50; }
+    100% { box-shadow: 9984px 0 0 0 #2c3e50, 9999px 0 0 0 #2c3e50, 10014px 0 0 0 #2c3e50; }
 }
 
 /* 加载动画 */
@@ -129,11 +197,105 @@ iframe {
     margin-bottom: 16px;
 }
 
+/* Markdown 样式 */
+.markdown-body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    word-wrap: break-word;
+    padding: 16px;
+    color: #24292e;
+    background-color: white;
+    border-radius: 8px;
+    margin-top: 16px;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #1a73e8;
+}
+
+.markdown-body p {
+    margin-bottom: 16px;
+}
+
+.markdown-body strong {
+    font-weight: 600;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    padding-left: 2em;
+    margin-bottom: 16px;
+}
+
+.markdown-body li {
+    margin: 4px 0;
+}
+
+.markdown-body code {
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(27,31,35,0.05);
+    border-radius: 3px;
+    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.markdown-body pre {
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f6f8fa;
+    border-radius: 8px;
+    margin: 16px 0;
+}
+
+.markdown-body blockquote {
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #1a73e8;
+    margin: 16px 0;
+}
+
+.markdown-body hr {
+    height: 0.25em;
+    padding: 0;
+    margin: 24px 0;
+    background-color: #e1e4e8;
+    border: 0;
+}
+
+/* 调整总结内容区域样式 */
 .summary-content {
     font-size: 14px;
     line-height: 1.6;
+    background: white;
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
 }
 
+.summary-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.summary-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.summary-content::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+}
 .comment-section {
     padding: 20px;
     border-top: 1px solid #e8e8e8;

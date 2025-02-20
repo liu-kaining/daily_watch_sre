@@ -9,6 +9,8 @@ Date: 2025-02-16
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %} - Daily Watch SRE</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <!-- 添加 marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
     {% block styles %}{% endblock %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>

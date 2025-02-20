@@ -12,6 +12,23 @@ from bs4 import BeautifulSoup
 import json
 from datetime import datetime
 import urllib.parse
+from pathlib import Path
+
+# 添加总结文件路径
+SUMMARIES_FILE = Path(__file__).parent.parent / 'data' / 'summaries.json'
+
+# 添加辅助函数
+def load_summaries():
+    if not SUMMARIES_FILE.exists():
+        with open(SUMMARIES_FILE, 'w', encoding='utf-8') as f:
+            json.dump({'summaries': {}}, f, ensure_ascii=False, indent=4)
+        return {}
+    with open(SUMMARIES_FILE, 'r', encoding='utf-8') as f:
+        return json.load(f).get('summaries', {})
+
+def save_summaries(summaries):
+    with open(SUMMARIES_FILE, 'w', encoding='utf-8') as f:
+        json.dump({'summaries': summaries}, f, ensure_ascii=False, indent=4)
 
 @main.route('/guide')
 def guide():
@@ -87,14 +104,16 @@ def summarize_article():
     try:
         data = request.get_json()
         if not data or 'url' not in data:
+            print("Debug: Missing URL in request data")
             return jsonify({
                 'success': False,
                 'message': '缺少文章 URL'
             }), 400
 
-        # 获取文章内容
-        article_content = Article.get_article_content(data['url'])
+        # 获取文章内容 - 修改这里的方法名
+        article_content = Article.get_content_by_url(data['url'])
         if not article_content:
+            print(f"Debug: Failed to get content for URL: {data['url']}")
             return jsonify({
                 'success': False,
                 'message': '无法获取文章内容'
@@ -104,14 +123,26 @@ def summarize_article():
         ai_service = AIService()
         # 生成总结
         result = ai_service.generate_summary(article_content)
+        
+        # 确保返回格式正确
+        if not isinstance(result, dict):
+            result = {
+                'success': True,
+                'data': {
+                    'summary': result
+                }
+            }
+            
         return jsonify(result)
 
     except ValueError as e:
+        print(f"Debug: ValueError in summarize_article: {str(e)}")  # 添加调试日志
         return jsonify({
             'success': False,
             'message': str(e)
         }), 500
     except Exception as e:
+        print(f"Debug: Error in summarize_article: {str(e)}")  # 添加调试日志
         return jsonify({
             'success': False,
             'message': f'处理请求时发生错误: {str(e)}'
@@ -285,3 +316,33 @@ def proxy_image():
         )
     except Exception as e:
         return ''
+
+@main.route('/api/article/summary', methods=['GET'])
+def get_summary():
+    """获取文章总结"""
+    url = request.args.get('url')
+    if not url:
+        return jsonify({'success': False, 'message': '缺少URL参数'})
+    
+    summaries = load_summaries()
+    return jsonify({
+        'success': True,
+        'exists': url in summaries,
+        'summary': summaries.get(url)
+    })
+
+@main.route('/api/article/summary', methods=['POST'])
+def save_summary():
+    """保存文章总结"""
+    data = request.get_json()
+    url = data.get('url')
+    summary = data.get('summary')
+    
+    if not url or not summary:
+        return jsonify({'success': False, 'message': '缺少必要参数'})
+    
+    summaries = load_summaries()
+    summaries[url] = summary
+    save_summaries(summaries)
+    
+    return jsonify({'success': True})

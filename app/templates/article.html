@@ -38,11 +38,11 @@
     <aside class="article-tools">
         <div class="summary-section">
             <h3>AI 总结</h3>
-            {% if not article.summary %}
-                <button id="summaryBtn" class="summary-btn">一键AI总结</button>
-            {% endif %}
+            <button id="summaryBtn" class="summary-btn">一键AI总结</button>
             <div id="summaryContent" class="summary-content">
-                {{ article.summary|safe if article.summary else '' }}
+                {% if article.summary %}
+                    <div class="markdown-body">{{ article.summary|safe }}</div>
+                {% endif %}
             </div>
         </div>
         <div class="comment-section">
@@ -51,6 +51,19 @@
         </div>
     </aside>
 
+    <!-- 在底部加载其他 JS -->
     <script src="{{ url_for('static', filename='js/article.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/summary.js') }}"></script>
+    <script>
+        // 等待页面和所有资源加载完成
+        window.addEventListener('load', function() {
+            // 初始化总结功能
+            AISummary.init();
+            const url = '{{ url }}';
+            if (url) {
+                AISummary.updatePanel(url);
+            }
+        });
+    </script>
 </body>
 </html>
