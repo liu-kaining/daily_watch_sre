@@ -15,19 +15,20 @@ import urllib.parse
 
 @main.route('/guide')
 def guide():
+    """指南页面：显示网站使用说明"""
     return render_template('guide.html')
 
 @main.route('/api/stats/articles', methods=['GET'])
 def get_article_stats():
+    """API接口：获取文章统计信息，返回文章总数"""
     try:
-        with open(Article.ARTICLES_FILE, 'r', encoding='utf-8') as f:
-            articles = json.load(f)
-            return jsonify({
-                'success': True,
-                'data': {
-                    'total': len(articles)
-                }
-            })
+        count = Article.get_total_count()
+        return jsonify({
+            'success': True,
+            'data': {
+                'total': count
+            }
+        })
     except Exception as e:
         return jsonify({
             'success': False,
@@ -36,6 +37,7 @@ def get_article_stats():
 
 @main.route('/')
 def index():
+    """首页：显示文章列表，支持分页"""
     page = request.args.get('page', 1, type=int)
     articles_data = Article.load_from_file(page=page)
     return render_template('index.html', **articles_data)
@@ -81,6 +83,7 @@ def search():
 
 @main.route('/api/summarize', methods=['POST'])
 def summarize_article():
+    """API接口：使用AI生成文章摘要"""
     try:
         data = request.get_json()
         if not data or 'url' not in data:
@@ -116,6 +119,7 @@ def summarize_article():
 
 @main.route('/article/<path:url>')
 def article(url):
+    """文章详情页：显示单篇文章的完整信息"""
     # 获取当前文章数据
     article_data = None
     groups = []
@@ -141,13 +145,9 @@ def article(url):
                          article=article_data,
                          groups=groups)
 
-@main.route('/get_article_count')
-def get_article_count():
-    count = Article.get_total_count()
-    return jsonify({'count': count})
-
 @main.route('/add_url', methods=['POST'])
 def add_url():
+    """API接口：添加新文章，需要验证token"""
     url = request.form.get('url')
     token = request.form.get('token')
 
@@ -197,10 +197,17 @@ def add_url():
         })
 
 @main.route('/views/<path:url>')
-def views(url):
-    """获取文章内容"""
+@main.route('/get_content')
+def views(url=None):
+    """文章内容页：获取并处理文章的HTML内容"""
     try:
-        # 直接处理微信文章 URL
+        # 从不同来源获取 URL
+        if url is None:
+            url = request.args.get('url')
+            if not url:
+                return '缺少文章 URL', 400
+
+        # 处理微信文章 URL
         if 'mp.weixin.qq.com' in url:
             if not url.startswith('http'):
                 if url.startswith('s/'):
@@ -257,63 +264,6 @@ def views(url):
     except Exception as e:
         print(f"Error getting article content: {e}")
         return '获取文章内容失败', 500
-
-@main.route('/get_content')
-def get_content():
-    url = request.args.get('url')
-    if not url:
-        url = request.path[7:]  # 移除 '/views/' 前缀
-        
-    try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Referer': 'https://mp.weixin.qq.com/'
-        }
-        response = requests.get(url, headers=headers)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        
-        # 移除评论和二维码相关的元素
-        for elem in soup.find_all(['script', 'div'], class_=lambda x: x and ('comment' in x.lower() or 'qr_code' in x.lower() if x else False)):
-            elem.decompose()
-            
-        # 移除二维码相关的链接
-        for link in soup.find_all('link', href=lambda x: x and 'qrcode' in x.lower() if x else False):
-            link.decompose()
-            
-        # 处理所有图片链接
-        for img in soup.find_all('img'):
-            if img.get('data-src'):
-                img['src'] = f"/proxy_image?url={img['data-src']}"
-                img['data-src'] = img['src']
-            elif img.get('src'):
-                img['src'] = f"/proxy_image?url={img['src']}"
-
-        # 添加必要的样式
-        style_tag = soup.new_tag('style')
-        style_tag.string = '''
-            body {
-                margin: 0;
-                padding: 20px;
-            }
-            img {
-                max-width: 100%;
-                height: auto;
-                margin: 10px auto;
-            }
-            #js_content {
-                padding: 20px;
-                max-width: 100%;
-            }
-        '''
-        if soup.head:
-            soup.head.append(style_tag)
-        else:
-            soup.body.insert(0, style_tag)
-
-        return str(soup)
-    except Exception as e:
-        print(f"Error loading content: {e}")
-        return "无法加载文章内容"
 
 @main.route('/proxy_image')
 def proxy_image():
