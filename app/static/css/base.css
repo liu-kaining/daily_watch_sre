@@ -21,6 +21,12 @@ nav .left {
     gap: 20px;
 }
 
+.nav-title {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 .nav-title a {
     text-decoration: none;
     color: white;
@@ -40,66 +46,6 @@ nav .left {
     font-size: 18px;
     color: white;
     opacity: 0.9;
-}
-
-.nav-title {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.nav-title .title-en {
-    font-size: 24px;  /* 保留较大的字号 */
-    font-weight: 500;
-    color: white;
-}
-
-.nav-title .title-zh {
-    font-size: 18px;  /* 保留较大的字号 */
-    color: white;
-    opacity: 0.9;
-}
-
-/* 删除重复的 nav h1 和 nav span 样式 */
-.nav-title .title-en {
-    font-size: 20px;
-    font-weight: 500;
-    color: white;
-}
-
-.nav-title .title-zh {
-    font-size: 14px;
-    color: white;
-    opacity: 0.9;
-}
-
-.nav-title a {
-    text-decoration: none;
-    color: white;
-    cursor: pointer;
-}
-
-.nav-title .title-en {
-    font-size: 20px;
-    font-weight: 500;
-}
-
-.nav-title .title-zh {
-    font-size: 14px;
-    opacity: 0.9;
-}
-
-nav h1 {
-    margin: 0;
-    font-size: 24px;  /* 增大标题字号 */
-    font-weight: 500;
-    color: white;
-}
-
-nav span {
-    font-size: 16px;  /* 增大副标题字号 */
-    opacity: 0.9;
-    color: white;
 }
 
 .datetime-display {
@@ -125,7 +71,6 @@ nav span {
     margin: 0 4px;
 }
 
-/* 保持原有的日期样式 */
 .datetime-display .date,
 .datetime-display .time {
     font-size: 15px;

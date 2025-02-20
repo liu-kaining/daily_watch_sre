@@ -25,35 +25,22 @@ body {
 }
 
 .article-main {
-    flex: 1.2;  /* 改小这个值，让中间区域变窄 */
+    flex: 1.5;
     position: relative;
     height: 100vh;
     overflow: hidden;
 }
 
 .article-tools {
-    flex: 1.8;  /* 增大这个值，让右侧更宽 */
+    flex: 2;
+    min-width: 400px;
     padding: 20px;
     background: #f8f9fa;
     border-left: 1px solid #e9ecef;
     overflow-y: auto;
 }
 
-.article-main {
-    flex: 1.5;  /* 从 2 改为 1.5，让中间区域更窄 */
-    position: relative;
-    height: 100vh;
-    overflow: hidden;
-}
-
-.article-tools {
-    flex: 2;  /* 从 1.5 改为 2，让右侧更宽 */
-    min-width: 400px;  /* 增加最小宽度 */
-    padding: 20px;
-    background: #f8f9fa;
-    border-left: 1px solid #e9ecef;
-    overflow-y: auto;
-}
+/* 删除重复的 .article-main 和 .article-tools 定义 */
 
 .summary-section {
     background: white;
