@@ -28,7 +28,7 @@ check_and_restart() {
             # 重新启动容器
             sudo docker run -d -p 8080:8080 \
                 -v "$(pwd)/app/data:/app/app/data" \
-                -e DASHSCOPE_API_KEY=sk-7c92805c60294810977a61b0e649dd00 \
+                -e DASHSCOPE_API_KEY=YOUR_TONGYI_API_KEY \
                 --name $CONTAINER_NAME \
                 daily-watch-sre
         fi
