@@ -34,3 +34,4 @@ Thumbs.db
 
 # Application Data
 app/data/articles.json
+.env
