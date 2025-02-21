@@ -20,7 +20,7 @@ backup_if_changed() {
     if [ ! -f "$file" ]; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Warning: $file does not exist" >> "$LOG_FILE"
         return
-    fi  # 这里把 } 改成 fi
+    fi
 
     # 如果是首次备份或文件有变化
     if [ ! -f "$backup_path" ] || ! cmp -s "$file" "$backup_path"; then
@@ -32,12 +32,6 @@ backup_if_changed() {
         # 创建新的备份
         cp "$file" "$backup_path"
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Backed up $filename" >> "$LOG_FILE"
-        
-        # 提交到 Git
-        cd "$SCRIPT_DIR/.."
-        git add "backups/$filename" "backups/${filename}.prev" 2>/dev/null
-        git commit -m "Backup update: $filename at $timestamp" 2>/dev/null
-        git push origin main 2>/dev/null
     fi
 }
 
