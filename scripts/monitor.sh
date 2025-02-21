@@ -14,11 +14,11 @@ check_and_restart() {
         fi
 
         # 检查镜像是否存在
-        if ! docker images -a --name daily-watch-sre && \$(ls -d | grep daily-watch-sre) 2>/dev/null; then
+        if ! docker images | grep -q "daily-watch-sre"; then
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] Container $CONTAINER_NAME does not have a valid image, attempting to rebuild..."
 
             # 重新启动容器
-            cd $(dirname "$0")/..
+            cd "$(dirname "$0")/.."
             sudo docker build -t daily-watch-sre .
             if [ $? -ne 0 ]; then
                 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Building container failed with exit code $?"
