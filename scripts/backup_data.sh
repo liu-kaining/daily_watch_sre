@@ -4,7 +4,7 @@
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 DATA_DIR="$SCRIPT_DIR/../app/data"
 BACKUP_DIR="$SCRIPT_DIR/../backups"
-LOG_FILE="$SCRIPT_DIR/backup.log"
+LOG_FILE="$BACKUP_DIR/backup.log"
 
 # 确保备份目录存在
 mkdir -p "$BACKUP_DIR"
@@ -20,7 +20,7 @@ backup_if_changed() {
     if [ ! -f "$file" ]; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Warning: $file does not exist" >> "$LOG_FILE"
         return
-    }
+    fi  # 这里把 } 改成 fi
 
     # 如果是首次备份或文件有变化
     if [ ! -f "$backup_path" ] || ! cmp -s "$file" "$backup_path"; then
