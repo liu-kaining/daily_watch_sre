@@ -4,7 +4,7 @@
 CONTAINER_NAME="daily-watch"
 
 check_and_restart() {
-    # 检查容器是否存在且运行，并且在本地有镜像
+    # 检查容器是否存在且运行
     if ! sudo docker ps -q -f name=$CONTAINER_NAME | grep -q .; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Container $CONTAINER_NAME is not running, attempting to restart..."
 
@@ -17,7 +17,7 @@ check_and_restart() {
         if ! docker images -a --name daily-watch-sre && \$(ls -d | grep daily-watch-sre) 2>/dev/null; then
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] Container $CONTAINER_NAME does not have a valid image, attempting to rebuild..."
 
-            # 重新启动新构建的容器
+            # 重新启动容器
             cd $(dirname "$0")/..
             sudo docker build -t daily-watch-sre .
             if [ $? -ne 0 ]; then
@@ -25,7 +25,7 @@ check_and_restart() {
                 exit 1
             fi
 
-            # 重新启动容器
+            # 重新启动新构建的容器
             sudo docker run -d -p 8080:8080 \
                 -v "$(pwd)/app/data:/app/app/data" \
                 -e DASHSCOPE_API_KEY=YOUR_TONGYI_API_KEY \
