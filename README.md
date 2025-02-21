@@ -117,54 +117,69 @@ python run.py
 -------------------
 
 容器管理命令：
-# 查看状态
+### 查看状态
+```
 docker ps
 docker logs daily-watch
+```
 
-# 重启服务
+### 重启服务
+```
 docker restart daily-watch
+```
 
-# 停止和删除
+### 停止和删除
+```
 docker stop daily-watch
 docker rm daily-watch
+```
 
-数据管理命令：
-# 手动备份
+数据管理命令
+-------------------
+### 手动备份
+```
 ./scripts/backup_data.sh
+```
 
-# 数据恢复
+### 数据恢复
+```
 ./scripts/restore_data.sh
+```
 
 项目结构
 -------------------
-daily_watch_sre/
-├── app/                    # 应用主目录
-│   ├── __init__.py        # 应用初始化
-│   ├── routes.py          # 路由控制
-│   ├── services/          # 服务层
-│   │   ├── __init__.py
-│   │   └── ai_service.py  # AI 服务
-│   ├── models/            # 数据模型
-│   │   ├── __init__.py
-│   │   └── article.py     # 文章模型
-│   ├── static/            # 静态资源
-│   │   ├── css/          # 样式文件
-│   │   └── js/           # JavaScript文件
-│   ├── templates/         # 模板文件
-│   │   ├── base.html     # 基础模板
-│   │   └── article.html  # 文章页面
-│   └── data/             # 数据存储
-│       ├── articles.json  # 文章数据
-│       └── summaries.json # AI总结数据
-├── scripts/               # 运维脚本
-│   ├── monitor.sh        # 容器监控脚本
-│   ├── backup_data.sh    # 数据备份脚本
-│   ├── restore_data.sh   # 数据恢复脚本
-│   └── install_cron.sh   # 定时任务安装脚本
-├── backups/              # 备份目录
-├── requirements.txt      # 依赖清单
-├── Dockerfile           # 容器构建文件
-└── README.md            # 项目说明
+
+```
+    daily_watch_sre/
+    ├── app/                    # 应用主目录
+    │   ├── __init__.py        # 应用初始化
+    │   ├── routes.py          # 路由控制
+    │   ├── services/          # 服务层
+    │   │   ├── __init__.py
+    │   │   └── ai_service.py  # AI 服务
+    │   ├── models/            # 数据模型
+    │   │   ├── __init__.py
+    │   │   └── article.py     # 文章模型
+    │   ├── static/            # 静态资源
+    │   │   ├── css/          # 样式文件
+    │   │   └── js/           # JavaScript文件
+    │   ├── templates/         # 模板文件
+    │   │   ├── base.html     # 基础模板
+    │   │   └── article.html  # 文章页面
+    │   └── data/             # 数据存储
+    │       ├── articles.json  # 文章数据
+    │       └── summaries.json # AI总结数据
+    ├── scripts/               # 运维脚本
+    │   ├── monitor.sh        # 容器监控脚本
+    │   ├── backup_data.sh    # 数据备份脚本
+    │   ├── restore_data.sh   # 数据恢复脚本
+    │   └── install_cron.sh   # 定时任务安装脚本
+    ├── backups/              # 备份目录
+    ├── requirements.txt      # 依赖清单
+    ├── Dockerfile           # 容器构建文件
+    └── README.md            # 项目说明
+
+```
 
 使用说明
 -------------------
