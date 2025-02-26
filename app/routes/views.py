@@ -10,6 +10,7 @@ from app.config.settings import verify_token
 import requests
 from bs4 import BeautifulSoup
 import json
+import os  # 添加这行
 from datetime import datetime
 import urllib.parse
 from pathlib import Path
@@ -246,6 +247,29 @@ def views(url=None):
                 else:
                     url = f'https://mp.weixin.qq.com/s/{url}'
         
+        # 检查缓存
+        cache_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'cache')
+        os.makedirs(cache_dir, exist_ok=True)
+        # 使用原始 URL 作为文件名，但需要处理特殊字符
+        safe_url = url.replace('/', '_').replace(':', '_').replace('?', '_').replace('=', '_')
+        cache_file = os.path.join(cache_dir, f"{safe_url}.html")
+        
+        # 检查缓存是否存在且未过期（7天）
+        if os.path.exists(cache_file):
+            file_time = os.path.getmtime(cache_file)
+            if (time.time() - file_time) < 7 * 24 * 3600:  # 7天的秒数
+                with open(cache_file, 'r', encoding='utf-8') as f:
+                    return f.read()
+            else:
+                # 缓存过期，删除旧文件
+                os.remove(cache_file)
+
+        # 尝试从缓存读取
+        if os.path.exists(cache_file):
+            with open(cache_file, 'r', encoding='utf-8') as f:
+                return f.read()
+        
+        # 如果缓存不存在，从网络获取
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             'Referer': 'https://mp.weixin.qq.com/'
@@ -253,15 +277,13 @@ def views(url=None):
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # 移除评论和二维码相关的元素
+        # 处理页面内容
         for elem in soup.find_all(['script', 'div'], class_=lambda x: x and ('comment' in x.lower() or 'qr_code' in x.lower() if x else False)):
             elem.decompose()
             
-        # 移除二维码相关的链接
         for link in soup.find_all('link', href=lambda x: x and 'qrcode' in x.lower() if x else False):
             link.decompose()
             
-        # 处理所有图片链接
         for img in soup.find_all('img'):
             if img.get('data-src'):
                 img['src'] = f"/proxy_image?url={img['data-src']}"
@@ -269,29 +291,29 @@ def views(url=None):
             elif img.get('src'):
                 img['src'] = f"/proxy_image?url={img['src']}"
 
-        # 添加必要的样式
+        # 添加样式
         style_tag = soup.new_tag('style')
         style_tag.string = '''
-            body {
-                margin: 0;
-                padding: 20px;
-            }
-            img {
-                max-width: 100%;
-                height: auto;
-                margin: 10px auto;
-            }
-            #js_content {
-                padding: 20px;
-                max-width: 100%;
-            }
+            body { margin: 0; padding: 20px; }
+            img { max-width: 100%; height: auto; margin: 10px auto; }
+            #js_content { padding: 20px; max-width: 100%; }
         '''
         if soup.head:
             soup.head.append(style_tag)
         else:
             soup.body.insert(0, style_tag)
 
-        return str(soup)
+        content = str(soup)
+        
+        # 保存到缓存
+        try:
+            with open(cache_file, 'w', encoding='utf-8') as f:
+                f.write(content)
+        except Exception as e:
+            print(f"缓存保存失败: {e}")
+
+        return content
+        
     except Exception as e:
         print(f"Error getting article content: {e}")
         return '获取文章内容失败', 500
