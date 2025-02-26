@@ -11,6 +11,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import os  # 添加这行
+import time  # 添加这行
 from datetime import datetime
 import urllib.parse
 from pathlib import Path
@@ -250,7 +251,6 @@ def views(url=None):
         # 检查缓存
         cache_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'cache')
         os.makedirs(cache_dir, exist_ok=True)
-        # 使用原始 URL 作为文件名，但需要处理特殊字符
         safe_url = url.replace('/', '_').replace(':', '_').replace('?', '_').replace('=', '_')
         cache_file = os.path.join(cache_dir, f"{safe_url}.html")
         
@@ -258,18 +258,19 @@ def views(url=None):
         if os.path.exists(cache_file):
             file_time = os.path.getmtime(cache_file)
             if (time.time() - file_time) < 7 * 24 * 3600:  # 7天的秒数
-                with open(cache_file, 'r', encoding='utf-8') as f:
-                    return f.read()
+                try:
+                    with open(cache_file, 'r', encoding='utf-8') as f:
+                        return f.read()
+                except Exception as e:
+                    print(f"读取缓存失败: {e}")
+                    # 如果读取失败，删除可能损坏的缓存文件
+                    os.remove(cache_file)
             else:
                 # 缓存过期，删除旧文件
                 os.remove(cache_file)
 
-        # 尝试从缓存读取
-        if os.path.exists(cache_file):
-            with open(cache_file, 'r', encoding='utf-8') as f:
-                return f.read()
-        
-        # 如果缓存不存在，从网络获取
+        # 删除重复的缓存读取代码
+        # 如果缓存不存在或已过期，从网络获取
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
             'Referer': 'https://mp.weixin.qq.com/'
