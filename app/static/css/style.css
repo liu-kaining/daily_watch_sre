@@ -1,3 +1,4 @@
+
 /**
  * Daily Watch SRE&AI - 样式表
  * Author: liqian_liukaining
@@ -326,6 +327,362 @@ nav {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.article-item:hover {
+    background: #fafafa;
+}
+
+.article-item.active {
+    background: #f0f7ff;
+    border-left: 2px solid #1e40af;
+    padding-left: 14px;
+}
+
+.article-title {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.source {
+    color: #666;
+}
+
+.created-time {
+    color: #999;
+}
+
+.toggle-icon {
+    font-size: 12px;
+    color: #999;
+    transition: transform 0.3s;
+}
+
+.date-group.collapsed .toggle-icon {
+    transform: rotate(-90deg);
+}
+
+.article-group {
+    transition: all 0.3s ease;
+}
+
+.date-group.collapsed .article-group {
+    display: none;
+}
+
+.article-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+
+.article-item:hover {
+    background: #f6f6f6;
+}
+
+.article-item.active {
+    background: #e6f7ff;
+    border-left: 3px solid #1890ff;
+}
+
+.article-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #999;
+}
+
+/* 分页控件 */
+.pagination {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    border-top: 1px solid #e5e7eb;
+    background: #fff;
+}
+
+.page-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    background: #2563eb;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.page-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.page-info {
+    color: #4b5563;
+    font-size: 14px;
+    font-weight: 500;
+    background: #f3f4f6;
+    padding: 8px 16px;
+    border-radius: 6px;
+}
+
+/* 底部信息 */
+.footer-info {
+    padding: 16px;
+    text-align: center;
+    border-top: 1px solid #e8e8e8;
+    font-size: 12px;
+    color: #999;
+}
+
+.project-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.footer-info a {
+    color: #3b82f6;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-info a:hover {
+    color: #2563eb;
+}
+
+.footer-info .author {
+    font-weight: 500;
+    color: #475569;
+}
+
+/* 中间面板 */
+.middle-panel {
+    flex: 1;
+    position: relative;
+    min-width: 0;
+    background: #fff;
+}
+
+#content-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* 加载动画样式 */
+.loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid #e6e6e6;
+    border-top: 5px solid #1e40af;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 20px;
+}
+
+.loading-text {
+    color: #1e40af;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 删除重复的样式定义 */
+.article-item,
+.article-title,
+.article-meta,
+.source,
+.created-time,
+.toggle-icon {
+    /* 保留前面定义的样式 */
+}
+
+/* 删除重复的动画定义 */
+@keyframes spin {
+    /* 保留一个定义 */
+}
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e6e6e6;
+    border-top: 4px solid #1e40af;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.loading-text {
+    margin-top: 16px;
+    color: #1e40af;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 右侧面板 */
+.right-panel {
+    width: 350px;
+    min-width: 350px;
+    border-left: 1px solid #e8e8e8;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-section {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.summary-section h3 {
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: #333;
+}
+
+.summary-btn {
+    width: 100%;
+    padding: 10px;
+    background: #1890ff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: all 0.2s;
+}
+
+.summary-btn:hover {
+    background: #40a9ff;
+}
+
+.summary-btn:disabled {
+    background: #bae7ff;
+    cursor: not-allowed;
+}
+
+.summary-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.comment-section {
+    padding: 20px;
+    border-top: 1px solid #e8e8e8;
+}
+
+.comment-section h3 {
+    margin-bottom: 16px;
+    font-size: 16px;
+    color: #333;
+}
+
+.placeholder {
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 0;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.count-number {
+    font-size: 1.8em;
+    color: #ffffff;
+    font-weight: 700;
+    padding: 0 8px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.qrcode-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.qrcode-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px;
+    margin-top: 20px;
+}
+
+.qrcode-section {
+    flex: 1;
+    text-align: center;
+    margin: 0 5px;
+}
+
+.qrcode-section h3 {
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.qrcode-container {
+    background: #fff;
+    padding: 8px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.qrcode-container img {
+    width: 200px;
+    height: 200px;
+    display: block;
+    margin: 0 auto;
+}
+
+.qrcode-container img:hover {
+    transform: scale(1.02);
 }
 
 .article-item:hover {
@@ -982,5 +1339,3 @@ nav {
     padding: 0 8px;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
-
-/* ... 后面的代码保持不变 ... */
