@@ -142,13 +142,35 @@ class Article:
     @classmethod
     def get_content_by_url(cls, url):
         """根据 URL 获取文章内容"""
-        try:
-            response = requests.get(url)
-            soup = BeautifulSoup(response.text, 'html.parser')
-            content = soup.find('div', class_='rich_media_content')
-            if content:
-                return content.get_text(strip=True)
-            return None
-        except Exception as e:
-            print(f"Error getting article content: {e}")
-            return None
+        max_retries = 3
+        retry_count = 0
+        
+        while retry_count < max_retries:
+            try:
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Accept': 'text/html'
+                }
+                response = requests.get(url, headers=headers, timeout=5)
+                response.raise_for_status()  # 检查响应状态
+                
+                soup = BeautifulSoup(response.text, 'html.parser')
+                content = soup.find('div', class_='rich_media_content')
+                
+                if content:
+                    return content.get_text(strip=True)
+                    
+                retry_count += 1
+                if retry_count < max_retries:
+                    print(f"未找到内容，第 {retry_count} 次重试...")
+                    time.sleep(1)  # 重试前等待1秒
+                    
+            except Exception as e:
+                retry_count += 1
+                if retry_count < max_retries:
+                    print(f"获取内容失败，第 {retry_count} 次重试... 错误: {str(e)}")
+                    time.sleep(1)  # 重试前等待1秒
+                else:
+                    print(f"最终获取失败，已重试 {max_retries} 次。错误: {str(e)}")
+                    
+        return None

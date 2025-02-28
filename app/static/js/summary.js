@@ -63,7 +63,7 @@ const AISummary = {
         // 显示加载动画和提示文字
         this.summaryContent.innerHTML = `
             <div class="thinking">
-                <div style="color: #666; font-size: 14px; margin-bottom: 15px;">总结中，请稍后片刻...</div>
+                <div style="color: #666; font-size: 14px; margin-bottom: 15px;">总结中，请稍后片刻...如果失败，请重试一下</div>
                 <div class="dot-typing"></div>
             </div>
         `;
